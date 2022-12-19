@@ -37,8 +37,6 @@ function Network(data) {
     { id: 5, r: 30, text: "Node5" },
     {
       id: 6,
-      x: 149.98390958868998,
-      y: 258.84586649697144,
       r: 30,
       text: "Node6",
     },
