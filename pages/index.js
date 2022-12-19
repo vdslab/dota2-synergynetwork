@@ -1,73 +1,28 @@
-import { getHeroCombinationWinLose } from "./api/api";
+import { getHeroCombinationWinLose, getHeroData } from "./api/api";
 import * as d3 from "d3";
 import React, { useState, useEffect } from "react";
 
-export default function Home(data) {
-  console.log(data);
+export default function Home({ _nodesData, _linksData }) {
   return (
     <div>
       <h1>Dota2 SynergyNetwork</h1>
       <div>
         <h2>HeroSynergyNetwork</h2>
-        <Network data={data} />
+        <Network _nodesData={_nodesData} _linksData={_linksData} />
       </div>
     </div>
   );
 }
 
-function Network(data) {
-  const [nodesData, setNodesData] = useState([
-    {
-      id: 0,
-      r: 30,
-      text: "Node0",
-    },
-    {
-      id: 1,
-      r: 30,
-      text: "Node1",
-    },
-    {
-      id: 2,
-      r: 30,
-      text: "Node2",
-    },
-    { id: 3, r: 30, text: "Node3" },
-    { id: 4, r: 30, text: "Node4" },
-    { id: 5, r: 30, text: "Node5" },
-    {
-      id: 6,
-      r: 30,
-      text: "Node6",
-    },
-  ]);
-  const [linksData, setLinksData] = useState([
-    { source: 0, target: 1, len: 30 },
-    { source: 0, target: 2, len: 45 },
-    { source: 0, target: 3, len: 79 },
-    { source: 0, target: 4, len: 90 },
-    { source: 0, target: 5, len: 39 },
-    { source: 0, target: 6, len: 82 },
-    { source: 1, target: 2, len: 55 },
-    { source: 1, target: 3, len: 43 },
-    { source: 1, target: 4, len: 91 },
-    { source: 1, target: 5, len: 13 },
-    { source: 1, target: 6, len: 43 },
-    { source: 2, target: 3, len: 56 },
-    { source: 2, target: 4, len: 78 },
-    { source: 2, target: 5, len: 32 },
-    { source: 2, target: 6, len: 45 },
-    { source: 3, target: 4, len: 67 },
-    { source: 3, target: 5, len: 21 },
-    { source: 3, target: 6, len: 67 },
-    { source: 4, target: 5, len: 21 },
-    { source: 4, target: 6, len: 56 },
-    { source: 5, target: 6, len: 21 },
-  ]);
+function Network({ _nodesData, _linksData }) {
+  const [nodesData, setNodesData] = useState(_nodesData);
+  const [linksData, setLinksData] = useState(_linksData);
+
   const width = 600;
   const height = 600;
 
   useEffect(() => {
+
     const startSimulation = (nodes, links) => {
       const simulation = d3
         .forceSimulation()
@@ -102,7 +57,7 @@ function Network(data) {
       }
     };
     startSimulation(nodesData, linksData);
-  });
+  }, []);
   return (
     <div>
       <svg width="800" height="800">
@@ -143,8 +98,36 @@ function Network(data) {
 
 export async function getStaticProps() {
   console.log("getStaticProps");
-  const data = await getHeroCombinationWinLose();
+  const heroData = await getHeroData();
+  const _nodesData = heroData.rows.map((d) => {
+    return (
+      {
+        id: d.id,
+        heroName: d.heroname,
+        r: 30,
+        x: Math.floor(Math.random()),
+        y: Math.floor(Math.random()),
+      }
+    );
+  }).sort((a, b) => a.id - b.id);
+
+  const heroCombinationWinLose = await getHeroCombinationWinLose();
+  const _linksData = heroCombinationWinLose.rows.map(d => {
+    const s = _nodesData.find(n => {
+      return n.id == d.hero1;
+    });
+    const t = _nodesData.find(n => {
+      return n.id == d.hero2;
+    });
+    return (
+      {
+        source: s,
+        target: t,
+        winRate: d.winrate,
+      }
+    );
+  });
   return {
-    props: { data },
+    props: { _nodesData: _nodesData, _linksData: _linksData },
   };
 }
