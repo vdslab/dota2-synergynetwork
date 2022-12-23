@@ -1,6 +1,6 @@
 import { getHeroCombinationWinLose, getHeroData } from "./api/api";
 import * as d3 from "d3";
-import React, { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home({ _nodesData, _linksData }) {
   return (
@@ -15,14 +15,36 @@ export default function Home({ _nodesData, _linksData }) {
 }
 
 function Network({ _nodesData, _linksData }) {
+  const nodesCount = 10;
   const [nodesData, setNodesData] = useState(_nodesData);
   const [linksData, setLinksData] = useState(_linksData);
-
-  const width = 600;
-  const height = 600;
+  const [limitedNodesData, setLimitedNodesData] = useState([]);
+  const [limitedLinksData, setLimitedLinksData] = useState([]);
+  const width = 1000;
+  const height = 1000;
 
   useEffect(() => {
+    for (let i = 0; i < 30; i++) {
+      limitedLinksData.push(linksData[i]);
+    }
+    limitedNodesData.push(limitedLinksData[0].source);
+    for (let i = 0; i < limitedLinksData.length; i++) {
+      const node1 = nodesData.find(
+        (node) => node.id == limitedLinksData[i].source.id
+      );
+      const node2 = nodesData.find(
+        (node) => node.id == limitedLinksData[i].target.id
+      );
+      console.log(limitedNodesData.some((node) => node.id == node1.id));
+      if (limitedNodesData.some((node) => node.id != node1.id)) {
+        limitedNodesData.push(node1);
+      }
 
+      if (limitedNodesData.some((node) => node.id != node2.id)) {
+        limitedNodesData.push(node2);
+      }
+    }
+    console.log(limitedLinksData);
     const startSimulation = (nodes, links) => {
       const simulation = d3
         .forceSimulation()
@@ -46,7 +68,7 @@ function Network({ _nodesData, _linksData }) {
             .forceLink()
             .id((d) => d.id)
             .distance(function (d) {
-              return d.len * 4;
+              return d.winRate * 4;
             })
             .iterations(1)
         );
@@ -57,77 +79,96 @@ function Network({ _nodesData, _linksData }) {
       }
     };
     startSimulation(nodesData, linksData);
-  }, []);
+  }, [nodesCount]);
   return (
-    <div>
-      <svg width="800" height="800">
-        {nodesData.map((data, index) => {
-          return (
-            <g key={index}>
-              <circle cx={data.x} cy={data.y} r={data.r} fill="blue"></circle>
-              <text
-                textAnchor="middle"
-                stroke="black"
-                fill="Red"
-                fontSize={"20px"}
-                x={data.x}
-                y={data.y}
-              >
-                {data.id}
-              </text>
-            </g>
-          );
-        })}
-        {linksData.map((data, index) => {
-          return (
-            <g key={index}>
-              <line
-                x1={data.source.x}
-                x2={data.target.x}
-                y1={data.source.y}
-                y2={data.target.y}
-                stroke="black"
-              ></line>
-            </g>
-          );
-        })}
-      </svg>
-    </div>
+    <ZoomableSVG width={width} height={height}>
+      {linksData.map((data, index) => {
+        const node1 = nodesData.find((x) => data.source.id == x.id);
+        const node2 = nodesData.find((x) => data.target.id == x.id);
+        return (
+          <g key={index}>
+            <line
+              x1={node1.x}
+              x2={node2.x}
+              y1={node1.y}
+              y2={node2.y}
+              stroke="black"
+            ></line>
+          </g>
+        );
+      })}
+      {nodesData.map((data, index) => {
+        return (
+          <g key={index}>
+            <circle cx={data.x} cy={data.y} r={data.r} fill="blue"></circle>
+            <text
+              textAnchor="middle"
+              stroke="black"
+              fill="Red"
+              fontSize={"20px"}
+              x={data.x}
+              y={data.y}
+            >
+              {data.heroName}
+            </text>
+          </g>
+        );
+      })}
+    </ZoomableSVG>
   );
 }
 
 export async function getStaticProps() {
   console.log("getStaticProps");
   const heroData = await getHeroData();
-  const _nodesData = heroData.rows.map((d) => {
-    return (
-      {
+  const _nodesData = heroData.rows
+    .map((d) => {
+      return {
         id: d.id,
         heroName: d.heroname,
         r: 30,
         x: Math.floor(Math.random()),
         y: Math.floor(Math.random()),
-      }
-    );
-  }).sort((a, b) => a.id - b.id);
+      };
+    })
+    .sort((a, b) => a.id - b.id);
 
   const heroCombinationWinLose = await getHeroCombinationWinLose();
-  const _linksData = heroCombinationWinLose.rows.map(d => {
-    const s = _nodesData.find(n => {
+  const _linksData = heroCombinationWinLose.rows.map((d) => {
+    const s = _nodesData.find((n) => {
       return n.id == d.hero1;
     });
-    const t = _nodesData.find(n => {
+    const t = _nodesData.find((n) => {
       return n.id == d.hero2;
     });
-    return (
-      {
-        source: s,
-        target: t,
-        winRate: d.winrate,
-      }
-    );
+    return {
+      source: s,
+      target: t,
+      winRate: d.winrate,
+    };
   });
   return {
     props: { _nodesData: _nodesData, _linksData: _linksData },
   };
+}
+
+function ZoomableSVG({ children, width, height }) {
+  const svgRef = useRef();
+  const [k, setK] = useState(1);
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  useEffect(() => {
+    const zoom = d3.zoom().on("zoom", (event) => {
+      const { x, y, k } = event.transform;
+      setK(k);
+      setX(x);
+      setY(y);
+    });
+    d3.select(svgRef.current).call(zoom);
+  }, []);
+  return (
+    <svg ref={svgRef} width={width} height={height}>
+      <g transform={`translate(${x},${y})scale(${k})`}>{children}</g>
+    </svg>
+  );
 }
