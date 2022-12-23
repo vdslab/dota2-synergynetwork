@@ -15,36 +15,12 @@ export default function Home({ _nodesData, _linksData }) {
 }
 
 function Network({ _nodesData, _linksData }) {
-  const nodesCount = 10;
   const [nodesData, setNodesData] = useState(_nodesData);
   const [linksData, setLinksData] = useState(_linksData);
-  const [limitedNodesData, setLimitedNodesData] = useState([]);
-  const [limitedLinksData, setLimitedLinksData] = useState([]);
   const width = 1000;
   const height = 1000;
 
   useEffect(() => {
-    for (let i = 0; i < 30; i++) {
-      limitedLinksData.push(linksData[i]);
-    }
-    limitedNodesData.push(limitedLinksData[0].source);
-    for (let i = 0; i < limitedLinksData.length; i++) {
-      const node1 = nodesData.find(
-        (node) => node.id == limitedLinksData[i].source.id
-      );
-      const node2 = nodesData.find(
-        (node) => node.id == limitedLinksData[i].target.id
-      );
-      console.log(limitedNodesData.some((node) => node.id == node1.id));
-      if (limitedNodesData.some((node) => node.id != node1.id)) {
-        limitedNodesData.push(node1);
-      }
-
-      if (limitedNodesData.some((node) => node.id != node2.id)) {
-        limitedNodesData.push(node2);
-      }
-    }
-    console.log(limitedLinksData);
     const startSimulation = (nodes, links) => {
       const simulation = d3
         .forceSimulation()
