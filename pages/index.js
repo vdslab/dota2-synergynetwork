@@ -15,6 +15,7 @@ export default function Home({ _nodesData, _linksData }) {
 }
 
 function Network({ _nodesData, _linksData }) {
+  const nodesCount = 10;
   const [nodesData, setNodesData] = useState(_nodesData);
   const [linksData, setLinksData] = useState(_linksData);
   const width = 1000;
@@ -117,6 +118,7 @@ export async function getStaticProps() {
     const t = _nodesData.find((n) => {
       return n.id == d.hero2;
     });
+    console.log(s);
     return {
       source: s,
       target: t,
