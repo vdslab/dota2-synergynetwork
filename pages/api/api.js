@@ -7,7 +7,8 @@ export async function request(query) {
 export async function getHeroCombinationWinLose() {
     // todo 以下にネットワークを構築するSQLを書く 既に書いてあるのは例 @高見
     const records = await getMatchCount();
-    const recordCount = records.rows[0].count;
+    let recordCount = 0;
+    recordCount = records.rows[0].count;
     console.log("count"+recordCount);
     const oneTimeAmount = 1000;
     let num = 0;
