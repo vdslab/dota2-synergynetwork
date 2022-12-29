@@ -80,7 +80,15 @@ export async function compileData(array) {
 }
 
 export async function getMatchCount() {
-    return await request("SELECT COUNT(*) FROM (SELECT * FROM  matches INNER JOIN  match_patch ON matches.match_id = match_patch.match_id AND match_patch.patch = '7.31'  ORDER BY matches.match_id DESC) AS table1");
+    let response = null;
+    for(let i = 0; i < 10; i++){
+        response =  await request("SELECT COUNT(*) FROM (SELECT * FROM  matches INNER JOIN  match_patch ON matches.match_id = match_patch.match_id AND match_patch.patch = '7.31'  ORDER BY matches.match_id DESC) AS table1");
+        if(response.rows)
+        break;
+        console.log(response);
+        await sleep(10000);
+    }
+    return response;
 }
 
 export async function getHeroData() {
