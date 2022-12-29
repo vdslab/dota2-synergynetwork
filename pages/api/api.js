@@ -5,26 +5,17 @@ export async function request(query) {
 }
 
 export async function getHeroCombinationWinLose() {
-    // todo 以下にネットワークを構築するSQLを書く 既に書いてあるのは例 @高見
-    const records = await getMatchCount();
-    let recordCount = 0;
-    recordCount = records.rows[0].count;
-    console.log("count"+recordCount);
-    const oneTimeAmount = 1000;
-    let num = 0;
+    const patches = await getPatchData(2);
+    console.log(patches);
     var array = [];
-    while( num <= recordCount){
-        const data = await getRecords(num, oneTimeAmount);
-        await sleep(1000);
-        if(data.rows){
-            array.push(...data.rows);
-            console.log(num+"="+data.rows[0]);
-            console.log(num+"="+data.rows.length);
-        }else{
-            console.log(num+"="+"miss"+data);
-        }
-        num+=oneTimeAmount;
+    for(const element of patches){
+        console.log(element.patch);
+        var data = await getDataByPatch(element);
+        array.push(...data);
+        console.log("records: " + array.length);
+        await sleep(2000);
     }
+    
     await compileData(array);
     await calcWin_rate(array);
     if(!array){
@@ -40,11 +31,10 @@ export async function calcWin_rate(array){
     array.forEach( (obj)=>{ obj.winrate = obj.win/obj.count} ); 
 }
 
-export async function getRecords(start, end) {
-    // todo 以下にネットワークを構築するSQLを書く 既に書いてあるのは例 @高見
+export async function getRecords(start, end, patch) {
     let response = null;
     for(let i = 0; i < 10; i++ ){
-        response = await request(`SELECT table3.hero1,table3.hero2, COUNT(table3.radiant_win=true OR NULL) AS win, COUNT(table3.radiant_win=false OR NULL) AS lose,  COUNT(table3.table1ID) FROM (SELECT tableA.match_id AS table1ID, tableB.match_id table2ID, matches.radiant_win, tableA.hero_id AS hero1, tableB.hero_id AS hero2 FROM (SELECT picks_bans.match_id, picks_bans.hero_id, picks_bans.is_pick,picks_bans.team, match_patch.patch FROM picks_bans, match_patch WHERE picks_bans.match_id = match_patch.match_id AND match_patch.patch = '7.31' ORDER BY picks_bans.match_id DESC LIMIT ${end} OFFSET ${start}) AS tableA INNER JOIN (SELECT picks_bans.match_id, picks_bans.hero_id, match_patch.patch ,picks_bans.is_pick, picks_bans.team FROM picks_bans, match_patch WHERE picks_bans.match_id = match_patch.match_id AND match_patch.patch = '7.31' ORDER BY picks_bans.match_id DESC LIMIT ${end} OFFSET ${start}) AS tableB ON tableA.match_id = tableB.match_id INNER JOIN matches ON matches.match_id = tableA.match_id where tableA.team = tableB.team  AND tableA.is_pick = true AND tableB.is_pick = true AND tableA.hero_id < tableB.hero_id ORDER BY tableA.match_id DESC) AS table3 GROUP BY table3.hero1, table3.hero2 ORDER BY table3.hero1, table3.hero2
+        response = await request(`SELECT table3.hero1,table3.hero2, COUNT(table3.radiant_win=true OR NULL) AS win, COUNT(table3.radiant_win=false OR NULL) AS lose,  COUNT(table3.table1ID) FROM (SELECT tableA.match_id AS table1ID, tableB.match_id table2ID, matches.radiant_win, tableA.hero_id AS hero1, tableB.hero_id AS hero2 FROM (SELECT picks_bans.match_id, picks_bans.hero_id, picks_bans.is_pick,picks_bans.team, match_patch.patch FROM picks_bans, match_patch WHERE picks_bans.match_id = match_patch.match_id AND match_patch.patch = '${patch.patch}' ORDER BY picks_bans.match_id DESC LIMIT ${end} OFFSET ${start}) AS tableA INNER JOIN (SELECT picks_bans.match_id, picks_bans.hero_id, match_patch.patch ,picks_bans.is_pick, picks_bans.team FROM picks_bans, match_patch WHERE picks_bans.match_id = match_patch.match_id AND match_patch.patch = '${patch.patch}' ORDER BY picks_bans.match_id DESC LIMIT ${end} OFFSET ${start}) AS tableB ON tableA.match_id = tableB.match_id INNER JOIN matches ON matches.match_id = tableA.match_id where tableA.team = tableB.team  AND tableA.is_pick = true AND tableB.is_pick = true AND tableA.hero_id < tableB.hero_id ORDER BY tableA.match_id DESC) AS table3 GROUP BY table3.hero1, table3.hero2 ORDER BY table3.hero1, table3.hero2
         `);
         if(response.rows){
             break;
@@ -79,20 +69,50 @@ export async function compileData(array) {
     return new_array;
 }
 
-export async function getMatchCount() {
+export async function getMatchCount(patch) {
     let response = null;
     for(let i = 0; i < 10; i++){
-        response =  await request("SELECT COUNT(*) FROM (SELECT * FROM  matches INNER JOIN  match_patch ON matches.match_id = match_patch.match_id AND match_patch.patch = '7.31'  ORDER BY matches.match_id DESC) AS table1");
-        if(response.rows)
-        break;
-        console.log(response);
+        response =  await request(`SELECT COUNT(*) FROM (SELECT * FROM  matches INNER JOIN  match_patch ON matches.match_id = match_patch.match_id AND match_patch.patch = '${patch.patch}'  ORDER BY matches.match_id DESC) AS table1`);
+        if(response.rows){
+            break;
+        }
+        console.log("response(matchCount):"+response);
         await sleep(10000);
     }
     return response;
 }
 
+export async function getDataByPatch(patch) {
+    var response = [];
+    const oneTimeAmount = 1000;
+    const records = await getMatchCount(patch);
+    console.log("records:"+records);
+    let recordCount = 0;
+    recordCount = records.rows[0].count;
+    console.log("count"+recordCount);
+    
+    let num = 0;
+    while( num <= recordCount){
+        const data = await getRecords(num, oneTimeAmount, patch);
+        await sleep(1000);
+        if(data.rows){
+            response.push(...data.rows);
+            console.log(num+"="+data.rows[0]);
+            console.log(num+"="+data.rows.length);
+        }else{
+            console.log(num+"="+"miss"+data);
+        }
+        num+=oneTimeAmount;
+    }
+
+    return response;
+}
+export async function getPatchData(limit) {
+    let data = await request(`SELECT DISTINCT match_patch.patch FROM match_patch ORDER BY patch DESC LIMIT ${limit}`);
+    return data.rows;
+}
+
 export async function getHeroData() {
-    // todo 以下にネットワークを構築するSQLを書く 既に書いてあるのは例 @高見
     return await request("SELECT id, localized_name AS heroName FROM heroes ");
 }
 
