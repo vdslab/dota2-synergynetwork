@@ -1,6 +1,7 @@
 import { getHeroCombinationWinLose, getHeroData } from "./api/api";
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
+import { count, index } from "d3";
 
 export default function Home({ _nodesData, _linksData }) {
   return (
@@ -26,54 +27,75 @@ function Network({ _nodesData, _linksData }) {
       const simulation = d3
         .forceSimulation()
         .force(
-          "collide",
-          d3
-            .forceCollide(nodes)
-            .radius(function (d) {
-              return d.r;
-            })
-            .strength(0.3)
-            .iterations(32)
-        )
-        .force("charge", d3.forceManyBody().strength(-400))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("x", d3.forceX().x(width / 2))
-        .force("y", d3.forceY().y(height / 2))
-        .force(
           "link",
           d3
             .forceLink()
             .id((d) => d.id)
             .distance(function (d) {
-              return d.winRate * 4;
+              return (1.1 - d.winRate) * 1000;
             })
-            .iterations(1)
-        );
-      simulation.nodes(nodes).on("tick", ticked);
-      simulation.force("link").links(links);
+            .strength(0.01)
+            .iterations(128)
+        )
+        .force(
+          "collide",
+          d3
+            .forceCollide()
+            .radius(function (d) {
+              return d.r;
+            })
+            .strength(0.7)
+            .iterations(128)
+        )
+        .force("charge", d3.forceManyBody().strength(-2000))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("x", d3.forceX().x(width / 2))
+        .force("y", d3.forceY().y(height / 2));
+      simulation.nodes(nodesData).on("tick", ticked);
+      simulation
+        .force("link")
+        .links(linksData)
+        .id(function (d) {
+          return d.index;
+        });
       function ticked() {
         setNodesData(nodes.slice());
+        setLinksData(links.slice());
       }
     };
     startSimulation(nodesData, linksData);
+    const winRateAndDist = linksData
+      .map((d) => {
+        const di = Math.sqrt(
+          (d.source.x - d.target.x) ** 2 + (d.source.y - d.target.y) ** 2
+        );
+        return {
+          id: d.id,
+          s: d.source.heroName,
+          t: d.target.heroName,
+          wi: d.winRate,
+          dist: di,
+        };
+      })
+      .sort((a, b) => a.dist - b.dist);
+    console.log(winRateAndDist);
   }, [nodesCount]);
   return (
     <ZoomableSVG width={width} height={height}>
       {linksData.map((data, index) => {
-        const node1 = nodesData.find((x) => data.source.id == x.id);
-        const node2 = nodesData.find((x) => data.target.id == x.id);
         return (
           <g key={index}>
             <line
-              x1={node1.x}
-              x2={node2.x}
-              y1={node1.y}
-              y2={node2.y}
+              x1={data.source.x}
+              x2={data.target.x}
+              y1={data.source.y}
+              y2={data.target.y}
               stroke="black"
             ></line>
           </g>
         );
       })}
+
       {nodesData.map((data, index) => {
         return (
           <g key={index}>
@@ -82,7 +104,7 @@ function Network({ _nodesData, _linksData }) {
               textAnchor="middle"
               stroke="black"
               fill="Red"
-              fontSize={"20px"}
+              fontSize={"10px"}
               x={data.x}
               y={data.y}
             >
@@ -97,34 +119,44 @@ function Network({ _nodesData, _linksData }) {
 
 export async function getStaticProps() {
   console.log("getStaticProps");
+  const max_id = 50;
   const heroData = await getHeroData();
   const _nodesData = heroData.rows
     .map((d) => {
-      return {
-        id: d.id,
-        heroName: d.heroname,
-        r: 30,
-        x: Math.floor(Math.random()),
-        y: Math.floor(Math.random()),
-      };
+      if (d.id < max_id) {
+        return {
+          id: d.id,
+          x: Math.floor(Math.random()),
+          y: Math.floor(Math.random()),
+          r: 30,
+          heroName: d.heroname,
+        };
+      }
     })
-    .sort((a, b) => a.id - b.id);
+    .sort((a, b) => a.id - b.id)
+    .filter((v) => v);
 
   const heroCombinationWinLose = await getHeroCombinationWinLose();
-  const _linksData = heroCombinationWinLose.rows.map((d) => {
-    const s = _nodesData.find((n) => {
-      return n.id == d.hero1;
-    });
-    const t = _nodesData.find((n) => {
-      return n.id == d.hero2;
-    });
-    console.log(s);
-    return {
-      source: s,
-      target: t,
-      winRate: d.winrate,
-    };
-  });
+  const _linksData = heroCombinationWinLose.rows
+    .map((d, index) => {
+      if (d.hero1 < max_id && d.hero2 < max_id) {
+        //
+        const s = _nodesData.find((n) => {
+          return n.id == d.hero1;
+        });
+        const t = _nodesData.find((n) => {
+          return n.id == d.hero2;
+        });
+        return {
+          id: index,
+          source: s.id,
+          target: t.id,
+          winRate: d.winrate,
+        };
+      }
+    })
+    .sort((a, b) => -a.winRate + b.winRate)
+    .filter((v) => v);
   return {
     props: { _nodesData: _nodesData, _linksData: _linksData },
   };
