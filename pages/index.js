@@ -3,13 +3,14 @@ import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import { count, index } from "d3";
 
-export default function Home({ _nodesData, _linksData }) {
+export default function Home({ data }) {
+  console.log(data);
   return (
     <div>
       <h1>Dota2 SynergyNetwork</h1>
       <div>
         <h2>HeroSynergyNetwork</h2>
-        <Network _nodesData={_nodesData} _linksData={_linksData} />
+
       </div>
     </div>
   );
@@ -23,6 +24,7 @@ function Network({ _nodesData, _linksData }) {
   const height = 1000;
 
   useEffect(() => {
+
     const startSimulation = (nodes, links) => {
       const simulation = d3
         .forceSimulation()
@@ -32,9 +34,8 @@ function Network({ _nodesData, _linksData }) {
             .forceLink()
             .id((d) => d.id)
             .distance(function (d) {
-              return (1.1 - d.winRate) * 1000;
+              return (1 - d.winRate) * 500;
             })
-            .strength(0.01)
             .iterations(128)
         )
         .force(
@@ -48,9 +49,7 @@ function Network({ _nodesData, _linksData }) {
             .iterations(128)
         )
         .force("charge", d3.forceManyBody().strength(-2000))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("x", d3.forceX().x(width / 2))
-        .force("y", d3.forceY().y(height / 2));
+        .force("center", d3.forceCenter(width / 2, height / 2));
       simulation.nodes(nodesData).on("tick", ticked);
       simulation
         .force("link")
@@ -118,47 +117,11 @@ function Network({ _nodesData, _linksData }) {
 }
 
 export async function getStaticProps() {
-  console.log("getStaticProps");
-  const max_id = 50;
-  const heroData = await getHeroData();
-  const _nodesData = heroData.rows
-    .map((d) => {
-      if (d.id < max_id) {
-        return {
-          id: d.id,
-          x: Math.floor(Math.random()),
-          y: Math.floor(Math.random()),
-          r: 30,
-          heroName: d.heroname,
-        };
-      }
-    })
-    .sort((a, b) => a.id - b.id)
-    .filter((v) => v);
+  const fs = require('fs');
+  const data = JSON.parse(fs.readFileSync("/Users/ikko/大学/尾上ゼミ/dota2-synergynetwork/dota2Data.json"))
 
-  const heroCombinationWinLose = await getHeroCombinationWinLose();
-  const _linksData = heroCombinationWinLose.rows
-    .map((d, index) => {
-      if (d.hero1 < max_id && d.hero2 < max_id) {
-        //
-        const s = _nodesData.find((n) => {
-          return n.id == d.hero1;
-        });
-        const t = _nodesData.find((n) => {
-          return n.id == d.hero2;
-        });
-        return {
-          id: index,
-          source: s.id,
-          target: t.id,
-          winRate: d.winrate,
-        };
-      }
-    })
-    .sort((a, b) => -a.winRate + b.winRate)
-    .filter((v) => v);
   return {
-    props: { _nodesData: _nodesData, _linksData: _linksData },
+    props: { data },
   };
 }
 
