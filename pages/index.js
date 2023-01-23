@@ -23,7 +23,7 @@ function ScatterPlot({ posData }) {
 
 export async function getStaticProps() {
   const fs = require('fs');
-  const jsonData = JSON.parse(fs.readFileSync("/Users/ikko/大学/尾上ゼミ/dota2-synergynetwork/dota2Data.json"));
+  const jsonData = JSON.parse(fs.readFileSync("./public/dota2Data.json"));
   const posData = await request(jsonData);
 
   return {
