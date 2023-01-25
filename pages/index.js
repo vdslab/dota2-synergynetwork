@@ -1,9 +1,8 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
-import { request } from "./api/api"
+import { request } from "./api/api";
 
 export default function Home({ jsonData, posData }) {
-  console.log(jsonData);
   return (
     <div>
       <h1>Dota2 SynergyNetwork</h1>
@@ -16,13 +15,75 @@ export default function Home({ jsonData, posData }) {
 }
 
 function ScatterPlot({ posData }) {
-  console.log(posData);
+  let nodesData = null;
+  const width = 1200;
+  const height = 1200;
+  const margin = 50;
+  const imageSize = 2;
 
-  // todo ZoomableSVGを適用した散布図を描く
+  if (posData) {
+    nodesData = new Array(posData.length);
+    posData.map((data, i) => {
+      nodesData[i] = {
+        heroName: data.heroname,
+        id: data.id,
+        image:
+          "/heroIcons/" +
+          data.heroname
+            .toLowerCase()
+            .replaceAll(" ", "_")
+            .replaceAll("%20", "_") +
+          ".png",
+        x: data.posX,
+        y: data.posY,
+      };
+    });
+  }
+  if (nodesData) {
+    const xScale = d3
+      .scaleLinear()
+      .domain([
+        Math.min(...nodesData.map((data) => data.x)),
+        Math.max(...nodesData.map((data) => data.x)),
+      ])
+      .range([margin, width - margin])
+      .nice();
+    const yScale = d3
+      .scaleLinear()
+      .domain([
+        Math.min(...nodesData.map((data) => data.y)),
+        Math.max(...nodesData.map((data) => data.y)),
+      ])
+      .range([margin, height - margin])
+      .nice();
+    return (
+      <ZoomableSVG width={width} height={height}>
+        {nodesData.map((data, index) => {
+          return (
+            <g
+              key={index}
+              transform={`translate(${xScale(data.x)},${
+                width - yScale(data.y)
+              })`}
+            >
+              <image
+                href={data.image}
+                height={imageSize * 9}
+                width={imageSize * 16}
+                alt=""
+              />
+            </g>
+          );
+        })}
+      </ZoomableSVG>
+    );
+  } else {
+    return <h1>Not Data</h1>;
+  }
 }
 
 export async function getStaticProps() {
-  const fs = require('fs');
+  const fs = require("fs");
   const jsonData = JSON.parse(fs.readFileSync("./public/dota2Data.json"));
   const posData = await request(jsonData);
 
