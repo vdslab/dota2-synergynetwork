@@ -7,6 +7,11 @@ export default function Home({ jsonData, posData }) {
     <div>
       <h1>Dota2 SynergyNetwork</h1>
       <div>
+        <h2>Form</h2>
+        <Form />
+      </div>
+
+      <div>
         <h2>HeroSynergyNetwork</h2>
         <ScatterPlot posData={posData} />
       </div>
@@ -80,6 +85,36 @@ function ScatterPlot({ posData }) {
   } else {
     return <h1>Not Data</h1>;
   }
+}
+
+function Form() {
+  return (
+    <div className="field">
+      <label className="label">表示したいデータ</label>
+      <div className="select">
+        <select onChange={(e) => ChangeShowValue(e.target.value)}>
+          <option>勝率差</option>
+          <option>使用率</option>
+          <option>勝率差 * 使用率</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
+function DropBox({ ChangeShowValue }) {
+  return (
+    <div className="field">
+      <label className="label">表示したいデータ</label>
+      <div className="select">
+        <select onChange={(e) => ChangeShowValue(e.target.value)}>
+          <option>勝率差</option>
+          <option>使用率</option>
+          <option>勝率差 * 使用率</option>
+        </select>
+      </div>
+    </div>
+  );
 }
 
 export async function getStaticProps() {
