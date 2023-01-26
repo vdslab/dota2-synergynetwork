@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
 
 export default function Home({ jsonData, posData }) {
+  console.log(posData);
   return (
     <div>
       <h1>Dota2 SynergyNetwork</h1>
@@ -67,9 +68,8 @@ function ScatterPlot({ posData }) {
           return (
             <g
               key={index}
-              transform={`translate(${xScale(data.x)},${
-                width - yScale(data.y)
-              })`}
+              transform={`translate(${xScale(data.x)},${width - yScale(data.y)
+                })`}
             >
               <image
                 href={data.image}
