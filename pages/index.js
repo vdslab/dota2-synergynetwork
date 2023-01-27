@@ -1,21 +1,15 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
+import { NewAppBar } from "./components/NewAppBar.js";
 
 export default function Home({ jsonData, posData }) {
   console.log(posData);
   return (
     <div>
-      <h1>Dota2 SynergyNetwork</h1>
-      <div>
-        <h2>Form</h2>
-        <Form />
-      </div>
-
-      <div>
+        <NewAppBar />
         <h2>HeroSynergyNetwork</h2>
         <ScatterPlot posData={posData} />
-      </div>
     </div>
   );
 }
