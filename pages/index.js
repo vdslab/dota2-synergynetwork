@@ -8,7 +8,6 @@ export default function Home({ jsonData, posData }) {
   return (
     <div>
         <NewAppBar />
-        <h2>HeroSynergyNetwork</h2>
         <ScatterPlot posData={posData} />
     </div>
   );
@@ -136,7 +135,7 @@ function ZoomableSVG({ children, width, height }) {
     d3.select(svgRef.current).call(zoom);
   }, []);
   return (
-    <svg ref={svgRef} width={width} height={height}>
+    <svg ref={svgRef} viewBox="0 0 1200 1200">
       <g transform={`translate(${x},${y})scale(${k})`}>{children}</g>
     </svg>
   );
