@@ -1,8 +1,9 @@
 import * as d3 from "d3";
+import { image } from "d3";
 import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
 
-export default function Home({ jsonData, posData }) {
+export default function Home({ jsonData, posData, _linksData }) {
   return (
     <div>
       <h1>Dota2 SynergyNetwork</h1>
@@ -13,37 +14,44 @@ export default function Home({ jsonData, posData }) {
 
       <div>
         <h2>HeroSynergyNetwork</h2>
-        <ScatterPlot posData={posData} />
+        <ScatterPlot posData={posData} _linksData={_linksData} />
       </div>
     </div>
   );
 }
 
-function ScatterPlot({ posData }) {
-  let nodesData = null;
+function ScatterPlot({ posData, _linksData }) {
+  const [nodesData, setNodesData] = useState(null);
+  let _nodesData;
+  const [linksData, setLinksData] = useState([{ source: 1, target: 1 }]);
+  let links = [];
   const width = 1200;
   const height = 1200;
   const margin = 50;
   const imageSize = 2;
+  useEffect(() => {
+    if (posData) {
+      _nodesData = new Array(posData.length);
+      posData.map((data, i) => {
+        _nodesData[i] = {
+          heroName: data.heroname,
+          id: data.id,
+          image:
+            "/heroIcons/" +
+            data.heroname
+              .toLowerCase()
+              .replaceAll(" ", "_")
+              .replaceAll("%20", "_") +
+            ".png",
+          x: data.posX,
+          y: data.posY,
+          show: 0,
+        };
+      });
+      setNodesData(_nodesData);
+    }
+  }, []);
 
-  if (posData) {
-    nodesData = new Array(posData.length);
-    posData.map((data, i) => {
-      nodesData[i] = {
-        heroName: data.heroname,
-        id: data.id,
-        image:
-          "/heroIcons/" +
-          data.heroname
-            .toLowerCase()
-            .replaceAll(" ", "_")
-            .replaceAll("%20", "_") +
-          ".png",
-        x: data.posX,
-        y: data.posY,
-      };
-    });
-  }
   if (nodesData) {
     const xScale = d3
       .scaleLinear()
@@ -63,13 +71,50 @@ function ScatterPlot({ posData }) {
       .nice();
     return (
       <ZoomableSVG width={width} height={height}>
+        {linksData.map((data, index) => {
+          const s = nodesData.find((n) => {
+            return n.id == data.source;
+          });
+          const t = nodesData.find((n) => {
+            return n.id == data.target;
+          });
+
+          return (
+            <g key={index}>
+              <line
+                x1={xScale(s.x) + (imageSize * 16) / 2}
+                x2={xScale(t.x) + (imageSize * 16) / 2}
+                y1={height - yScale(s.y) + (imageSize * 9) / 2}
+                y2={height - yScale(t.y) + (imageSize * 9) / 2}
+                stroke="black"
+              ></line>
+            </g>
+          );
+        })}
         {nodesData.map((data, index) => {
           return (
             <g
               key={index}
               transform={`translate(${xScale(data.x)},${
-                width - yScale(data.y)
+                height - yScale(data.y)
               })`}
+              onClick={() => {
+                let newNodesData = nodesData;
+                newNodesData[index].show = Math.abs(
+                  newNodesData[index].show - 1
+                );
+                setNodesData(newNodesData);
+                links = [];
+                _linksData.map((link) => {
+                  nodesData.map((node) => {
+                    if (node.show) {
+                      if (node.id == link.source || node.id == link.target)
+                        links.push(link);
+                    }
+                    setLinksData(links);
+                  });
+                });
+              }}
             >
               <image
                 href={data.image}
@@ -121,9 +166,26 @@ export async function getStaticProps() {
   const fs = require("fs");
   const jsonData = JSON.parse(fs.readFileSync("./public/dota2Data.json"));
   const posData = await request(jsonData);
-
+  const _linksData = jsonData.getHeroCombinationWinLose
+    .map((d, index) => {
+      const s = posData.find((n) => {
+        return n.id == d.hero1;
+      });
+      const t = posData.find((n) => {
+        return n.id == d.hero2;
+      });
+      return {
+        id: index,
+        source: s.id,
+        target: t.id,
+        winRate: d.winrate,
+      };
+    })
+    .sort((a, b) => -a.winRate + b.winRate)
+    .filter((v) => v);
+  console.log(_linksData);
   return {
-    props: { jsonData, posData },
+    props: { jsonData, posData, _linksData },
   };
 }
 
