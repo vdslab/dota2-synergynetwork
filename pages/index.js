@@ -1,21 +1,14 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
+import { NewAppBar } from "./components/NewAppBar.js";
 
 export default function Home({ jsonData, posData }) {
   console.log(posData);
   return (
     <div>
-      <h1>Dota2 SynergyNetwork</h1>
-      <div>
-        <h2>Form</h2>
-        <Form />
-      </div>
-
-      <div>
-        <h2>HeroSynergyNetwork</h2>
+        <NewAppBar />
         <ScatterPlot posData={posData} />
-      </div>
     </div>
   );
 }
@@ -142,7 +135,7 @@ function ZoomableSVG({ children, width, height }) {
     d3.select(svgRef.current).call(zoom);
   }, []);
   return (
-    <svg ref={svgRef} width={width} height={height}>
+    <svg ref={svgRef} viewBox="0 0 1200 1200">
       <g transform={`translate(${x},${y})scale(${k})`}>{children}</g>
     </svg>
   );
