@@ -5,22 +5,25 @@ import { useState } from "react";
 import { FormControl, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
 import NorthWestIcon from '@mui/icons-material/NorthWest';
+import MenuIcon from '@mui/icons-material/Menu';
 export const NewAppBar = () =>{
     const [ showValue, setShowValue] = useState("勝率差");
+    const [ menu, setMenu ] = useState([400,400]);
     const handleChange = (e)=>{
         setShowValue(e.target.value)
     }
     const hideMenu = () =>{
-      
+      setMenu([70,70]);
     }
-    return( 
-        <Box position="fixed" style={{boxShadow:"5px 5px 5px rgba(0,0,0,0.3)", borderRadius:"2px"}}  sx = {{
-        width:400,
-        height:400,
-        margin: 1,
-        backgroundColor:"#FFFFFF"
-      }}>
-          <h1>Dota2 SynergyNetwork</h1>
+    const openMenu = () =>{
+      setMenu([400,400]);
+    }
+
+    const MenuContents=()=>{
+      if(menu[0]==400){
+        return(
+          <div>
+            <h1>Dota2 SynergyNetwork</h1>
           <Box sx={{
             margin:1
           }}>
@@ -39,9 +42,27 @@ export const NewAppBar = () =>{
           </Select>
           </FormControl>
           </Box>
-          <IconButton position="absolute" size="large" style={{left:340, top:190}} onChange={hideMenu}>
+          <IconButton position="absolute" size="large" style={{left:340, top:190}} onClick={hideMenu}>
             <NorthWestIcon fontSize="inherit"/>
           </IconButton>
+          </div>
+        )
+      }else{
+        return (
+          <IconButton position="absolute" size="large" style={{left:10, top:10}} onClick={openMenu}>
+            <MenuIcon fontSize="inherit"/>
+          </IconButton>
+        )
+      }
+    }
+    return( 
+        <Box position="fixed" style={{transition:"0.5s", overflow:"hidden",boxShadow:"5px 5px 5px rgba(0,0,0,0.25)", borderRadius:"2px"}}  sx = {{
+        width:menu[0],
+        height:menu[1],
+        margin: 1,
+        backgroundColor:"#FFFFFF"
+      }}>
+          <MenuContents/>
         </Box>
     );
 } 
