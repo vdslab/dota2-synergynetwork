@@ -18,7 +18,7 @@ function ScatterPlot({ posData }) {
   const width = 1200;
   const height = 1200;
   const margin = 50;
-  const imageSize = 2;
+  const imageSize = 4.5;
 
   if (posData) {
     nodesData = new Array(posData.length);
@@ -69,6 +69,7 @@ function ScatterPlot({ posData }) {
                 height={imageSize * 9}
                 width={imageSize * 16}
                 alt=""
+                style={{clipPath:"circle(35%)"}}
               />
             </g>
           );
