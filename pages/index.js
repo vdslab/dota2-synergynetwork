@@ -20,6 +20,20 @@ function ScatterPlot({ posData }) {
   const margin = 50;
   const imageSize = 4.5;
 
+  const [nodeState, setNodeState] = useState(nodesStateArray);
+  function nodesStateArray(){
+    const _nodesState = [] 
+    for(let i = 0; i < 130; i++){
+      _nodesState.push(
+        {
+          id: i,
+          selected: false
+        }
+      )
+    }
+    return _nodesState
+  }
+
   if (posData) {
     nodesData = new Array(posData.length);
     posData.map((data, i) => {
@@ -65,11 +79,16 @@ function ScatterPlot({ posData }) {
                 })`}
             >
               <image
+              onClick={()=>{
+                let _nodeState= nodeState.slice(0, nodeState.length);
+                _nodeState[index].selected= true;
+                setNodeState(_nodeState)
+              }}
                 href={data.image}
                 height={imageSize * 9}
                 width={imageSize * 16}
                 alt=""
-                style={{clipPath:"circle(35%)"}}
+                style={nodeState[index].selected ? {clipPath:"circle(35%)"} : {clipPath:"circle(35%)"}}
               />
             </g>
           );
