@@ -83,7 +83,7 @@ function ScatterPlot({ posData }) {
               <image
               onClick={()=>{
                 let _nodeState= nodeState.slice(0, nodeState.length);
-                _nodeState[index].selected= true;
+                _nodeState[index].selected= nodeState[index].selected ? false : true
                 setNodeState(_nodeState)
               }}
                 href={data.image}
