@@ -3,25 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
 import { NewAppBar } from "./components/NewAppBar.js";
 import { trimmingIcon } from "./components/TrimmingIcon";
+import { DisplayData } from "./components/DisplayData";
 
 export default function Home({ jsonData, posData }) {
   console.log(posData);
-  return (
-    <div>
-        <NewAppBar />
-        <ScatterPlot posData={posData} />
-    </div>
-  );
-}
-
-function ScatterPlot({ posData }) {
-  let nodesData = null;
-  const width = 1200;
-  const height = 1200;
-  const margin = 50;
-  const imageSize = 4.5;
-
   const [nodeState, setNodeState] = useState(nodesStateArray);
+  
   function nodesStateArray(){
     const _nodesState = [] 
     for(let i = 0; i < 130; i++){
@@ -34,6 +21,26 @@ function ScatterPlot({ posData }) {
     }
     return _nodesState
   }
+
+  return (
+    <div>
+        <NewAppBar />
+        <ScatterPlot posData={posData} nodeState={nodeState} setNodeState={setNodeState}/>
+    </div>
+  );
+}
+
+function ScatterPlot(props) {
+  let nodesData = null;
+  const width = 1200;
+  const height = 1200;
+  const margin = 50;
+  const imageSize = 4.5;
+  const posData=props.posData;
+  const nodeState=props.nodeState;
+  const setNodeState = props.setNodeState;
+
+  
 
   if (posData) {
     nodesData = new Array(posData.length);
