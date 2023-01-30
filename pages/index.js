@@ -2,25 +2,36 @@ import * as d3 from "d3";
 import { image } from "d3";
 import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
+import { NewAppBar } from "./components/NewAppBar.js";
+import { trimmingIcon } from "./components/TrimmingIcon";
+import { DisplayData } from "./components/DisplayData";
 
 export default function Home({ jsonData, posData, _linksData }) {
+  console.log(posData);
+  const [nodeState, setNodeState] = useState(nodesStateArray);
+
+  function nodesStateArray() {
+    const _nodesState = []
+    for (let i = 0; i < 130; i++) {
+      _nodesState.push(
+        {
+          id: i,
+          selected: false
+        }
+      )
+    }
+    return _nodesState;
+  }
+
   return (
     <div>
-      <h1>Dota2 SynergyNetwork</h1>
-      <div>
-        <h2>Form</h2>
-        <Form />
-      </div>
-
-      <div>
-        <h2>HeroSynergyNetwork</h2>
-        <ScatterPlot posData={posData} _linksData={_linksData} />
-      </div>
+      <NewAppBar nodeState={nodeState} setNodeState={setNodeState} />
+      <ScatterPlot posData={posData} nodeState={nodeState} setNodeState={setNodeState} _linksData={_linksData} />
     </div>
   );
 }
 
-function ScatterPlot({ posData, _linksData }) {
+function ScatterPlot({ posData, nodeState, setNodeState, _linksData }) {
   const [nodesData, setNodesData] = useState(null);
   let _nodesData;
   const [linksData, setLinksData] = useState([{ source: 1, target: 1 }]);
@@ -28,7 +39,7 @@ function ScatterPlot({ posData, _linksData }) {
   const width = 1200;
   const height = 1200;
   const margin = 50;
-  const imageSize = 2;
+  const imageSize = 4.5;
   useEffect(() => {
     if (posData) {
       _nodesData = new Array(posData.length);
@@ -82,10 +93,10 @@ function ScatterPlot({ posData, _linksData }) {
           return (
             <g key={index}>
               <line
-                x1={xScale(s.x) + (imageSize * 16) / 2}
-                x2={xScale(t.x) + (imageSize * 16) / 2}
-                y1={height - yScale(s.y) + (imageSize * 9) / 2}
-                y2={height - yScale(t.y) + (imageSize * 9) / 2}
+                x1={xScale(s.x)}
+                x2={xScale(t.x)}
+                y1={height - yScale(s.y)}
+                y2={height - yScale(t.y)}
                 stroke="black"
               ></line>
             </g>
@@ -95,9 +106,8 @@ function ScatterPlot({ posData, _linksData }) {
           return (
             <g
               key={index}
-              transform={`translate(${xScale(data.x)},${
-                height - yScale(data.y)
-              })`}
+              transform={`translate(${xScale(data.x)},${height - yScale(data.y)
+                })`}
               onClick={() => {
                 let newNodesData = nodesData;
                 newNodesData[index].show = Math.abs(
@@ -116,11 +126,20 @@ function ScatterPlot({ posData, _linksData }) {
                 });
               }}
             >
+              <circle r={imageSize * 5} fill={nodeState[index].selected ? "lime" : "black"} />
               <image
+                onClick={() => {
+                  let _nodeState = nodeState.slice(0, nodeState.length);
+                  _nodeState[index].selected = nodeState[index].selected ? false : true
+                  setNodeState(_nodeState)
+                }}
                 href={data.image}
                 height={imageSize * 9}
                 width={imageSize * 16}
                 alt=""
+                x={-imageSize * 16 / 2}
+                y={-imageSize * 9 / 2}
+                style={trimmingIcon(data.image, index, imageSize)}
               />
             </g>
           );
@@ -204,7 +223,7 @@ function ZoomableSVG({ children, width, height }) {
     d3.select(svgRef.current).call(zoom);
   }, []);
   return (
-    <svg ref={svgRef} width={width} height={height}>
+    <svg ref={svgRef} viewBox="0 0 1200 1200">
       <g transform={`translate(${x},${y})scale(${k})`}>{children}</g>
     </svg>
   );
