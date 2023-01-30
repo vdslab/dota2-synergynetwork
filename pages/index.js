@@ -8,7 +8,7 @@ import { DisplayData } from "./components/DisplayData";
 export default function Home({ jsonData, posData }) {
   console.log(posData);
   const [nodeState, setNodeState] = useState(nodesStateArray);
-  
+
   function nodesStateArray(){
     const _nodesState = [] 
     for(let i = 0; i < 130; i++){
@@ -24,7 +24,7 @@ export default function Home({ jsonData, posData }) {
 
   return (
     <div>
-        <NewAppBar />
+        <NewAppBar nodeState={nodeState} setNodeState={setNodeState}/>
         <ScatterPlot posData={posData} nodeState={nodeState} setNodeState={setNodeState}/>
     </div>
   );
