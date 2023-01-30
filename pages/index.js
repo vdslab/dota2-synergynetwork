@@ -33,7 +33,6 @@ export default function Home({ jsonData, posData, _linksData }) {
 
 function ScatterPlot({ posData, nodeState, setNodeState, _linksData }) {
   const [nodesData, setNodesData] = useState(null);
-  let _nodesData;
   const [linksData, setLinksData] = useState([{ source: 1, target: 1 }]);
   let links = [];
   const width = 1200;
@@ -41,27 +40,26 @@ function ScatterPlot({ posData, nodeState, setNodeState, _linksData }) {
   const margin = 50;
   const imageSize = 4.5;
   useEffect(() => {
-    if (posData) {
-      _nodesData = new Array(posData.length);
-      posData.map((data, i) => {
-        _nodesData[i] = {
-          heroName: data.heroname,
-          id: data.id,
-          image:
-            "/heroIcons/" +
-            data.heroname
-              .toLowerCase()
-              .replaceAll(" ", "_")
-              .replaceAll("%20", "_") +
-            ".png",
-          x: data.posX,
-          y: data.posY,
-          show: 0,
-        };
-      });
-      setNodesData(_nodesData);
-    }
-  }, []);
+    const _nodesData = new Array(posData.length);
+    posData.map((data, i) => {
+      _nodesData[i] = {
+        heroName: data.heroname,
+        id: data.id,
+        image:
+          "/heroIcons/" +
+          data.heroname
+            .toLowerCase()
+            .replaceAll(" ", "_")
+            .replaceAll("%20", "_") +
+          ".png",
+        x: data.posX,
+        y: data.posY,
+        show: 0,
+      };
+    });
+    setNodesData(_nodesData);
+
+  }, [posData]);
 
   if (nodesData) {
     const xScale = d3

@@ -1,9 +1,9 @@
-export const DisplayData = (props) =>{
+export const DisplayData = (props) => {
     const nodeState = props.nodeState
-    const setNodeState= props.setNodeState
+    const setNodeState = props.setNodeState
     let displayIcons = []
-    nodeState.forEach((element)=>{
-        if(element.selected){
+    nodeState.forEach((element) => {
+        if (element.selected) {
             displayIcons.push(element.id)
         }
     })
@@ -12,8 +12,12 @@ export const DisplayData = (props) =>{
     return (
         <svg>
             {
-                
+
             }
         </svg>
     );
+}
+
+export default function Home() {
+    return (<div></div>)
 }
