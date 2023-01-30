@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
 import { NewAppBar } from "./components/NewAppBar.js";
+import { trimmingIcon } from "./components/TrimmingIcon";
 
 export default function Home({ jsonData, posData }) {
   console.log(posData);
@@ -78,6 +79,7 @@ function ScatterPlot({ posData }) {
               transform={`translate(${xScale(data.x)},${width - yScale(data.y)
                 })`}
             >
+              <circle r={imageSize*5} fill={nodeState[index].selected ? "lime" : "black" }/>
               <image
               onClick={()=>{
                 let _nodeState= nodeState.slice(0, nodeState.length);
@@ -88,7 +90,9 @@ function ScatterPlot({ posData }) {
                 height={imageSize * 9}
                 width={imageSize * 16}
                 alt=""
-                style={nodeState[index].selected ? {clipPath:"circle(35%)"} : {clipPath:"circle(35%)"}}
+                x={-imageSize*16/2}
+                y={-imageSize*9/2}
+                style={trimmingIcon(data.image, index, imageSize)}
               />
             </g>
           );
