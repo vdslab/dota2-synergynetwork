@@ -11,7 +11,7 @@ import { SelectHero } from './SelectHero';
 import { HeroList } from './HeroList';
 export const NewAppBar = ({ selectedNode, setSelectedNode, posData, _jsonData}) => {
   const [showValue, setShowValue] = useState("勝率差");
-  const [menu, setMenu] = useState([400, 700]);
+  const [menu, setMenu] = useState([400, 1000]);
   const handleChange = (e) => {
     setShowValue(e.target.value)
   }
