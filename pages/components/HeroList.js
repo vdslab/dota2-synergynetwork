@@ -23,3 +23,7 @@ export const HeroList = ({posData}) =>{
 
     )
 }
+
+export default function Home() {
+    return (<div></div>)
+}

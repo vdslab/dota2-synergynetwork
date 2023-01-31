@@ -40,3 +40,7 @@ export const HeroListDrawer = ({heroListOpen, handleHeroListDrawerClose, posData
       </Drawer>
     )
 } 
+
+export default function Home() {
+  return (<div></div>)
+}
