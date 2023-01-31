@@ -1,15 +1,20 @@
 import * as d3 from "d3";
-import { image } from "d3";
+import { active, image } from "d3";
 import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
 import { NewAppBar } from "./components/NewAppBar.js";
 import { trimmingIcon } from "./components/TrimmingIcon";
 import { DisplayData } from "./components/DisplayData";
 
-export default function Home({ _posData, _linksData }) {
+export default function Home({ _jsonData, _posData }) {
   const [posData, setPosData] = useState(_posData);
   const [linksdata, setLinksData] = useState(null);
+
   const [selectedNode, setSelectedNode] = useState([-1, -1]);
+  const [activeHero, setActiveHero] = useState(_posData.map((e) => { return (e.id) }));
+  const [changeHero, setChangeHero] = useState(false);
+  const [matchCountMinMax, setMatchCountMinMax] = useState([500, 10000]);
+  const [winRateMinMax, setWinRateMinMax] = useState([0, 1]);
 
   function updateLinksData() {
     const trans = {}
@@ -17,29 +22,52 @@ export default function Home({ _posData, _linksData }) {
       trans[d.id.toString()] = d.c_id;
     })
 
-    setLinksData(_linksData.map((d) => {
-      return (
-        {
-          source: d.hero1,
-          target: d.hero2,
-          source_c: trans[d.hero1.toString()],
-          target_c: trans[d.hero2.toString()],
-          win: d.win,
-          lose: d.lose,
-        }
-      );
+    setLinksData(_jsonData.getHeroCombinationWinLose.map((d) => {
+      if (activeHero.indexOf(d.hero1) != -1 || activeHero.indexOf(d.hero2) != -1) {
+        return (
+          {
+            source: d.hero1,
+            target: d.hero2,
+            source_c: trans[d.hero1.toString()],
+            target_c: trans[d.hero2.toString()],
+            win: d.win,
+            lose: d.lose,
+            count: d.count,
+            winRate: d.winrate,
+          }
+        );
+      }
     }));
   }
+
+  useEffect(() => {
+    if (changeHero) {
+      console.log("acetiveHero");
+      (async () => {
+        const jsonData = {
+          heroData: _jsonData.heroData.filter((e) => {
+            return (activeHero.indexOf(e.id) != -1);
+          }),
+          getHeroCombinationWinLose: _jsonData.getHeroCombinationWinLose.filter((e) => {
+            return (activeHero.indexOf(e.hero1) != -1 || activeHero.indexOf(e.hero2) != -1);
+          }),
+        };
+        const r = await request(jsonData);
+        setPosData(r);
+      })();
+      setChangeHero(false);
+    }
+  }, [changeHero]);
 
   useEffect(() => {
     updateLinksData();
   }, [posData]);
 
-  //return (<div></div>);
-
   if (linksdata == null) {
     return (<div>読み込み中...</div>);
   }
+
+  //return (<div></div>);
 
   return (
     <div>
@@ -48,12 +76,14 @@ export default function Home({ _posData, _linksData }) {
         linksData={linksdata}
         selectedNode={selectedNode}
         setSelectedNode={setSelectedNode}
+        matchCountMinMax={matchCountMinMax}
+        winRateMinMax={winRateMinMax}
       />
     </div>
   );
 }
 
-function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode }) {
+function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchCountMinMax, winRateMinMax }) {
   const width = 1200;
   const height = 1200;
   const margin = 50;
@@ -113,17 +143,20 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode }) {
     <ZoomableSVG width={width} height={height}>
       {linksData.map((data) => {
         if (selectedNode.indexOf(data.source) != -1 || selectedNode.indexOf(data.target) != -1) {
-          return (
-            <g key={`${data.source},${data.target}`}>
-              <line
-                x1={xScale(posData[data.source_c].x)}
-                x2={xScale(posData[data.target_c].x)}
-                y1={height - yScale(posData[data.source_c].y)}
-                y2={height - yScale(posData[data.target_c].y)}
-                stroke="black"
-              ></line>
-            </g>
-          );
+          if (winRateMinMax[0] <= data.winRate && data.winRate <= winRateMinMax[1] &&
+            matchCountMinMax[0] <= data.count && data.count <= matchCountMinMax[1]) {
+            return (
+              <g key={`${data.source},${data.target}`}>
+                <line
+                  x1={xScale(posData[data.source_c].x)}
+                  x2={xScale(posData[data.target_c].x)}
+                  y1={height - yScale(posData[data.source_c].y)}
+                  y2={height - yScale(posData[data.target_c].y)}
+                  stroke="black"
+                ></line>
+              </g>
+            );
+          }
         }
       })}
       {posData.map((data, index) => {
@@ -155,12 +188,11 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode }) {
 
 export async function getStaticProps() {
   const fs = require("fs");
-  const jsonData = JSON.parse(fs.readFileSync("./public/dota2Data.json"));
-  const _posData = await request(jsonData);
-  const _linksData = jsonData.getHeroCombinationWinLose;
+  const _jsonData = JSON.parse(fs.readFileSync("./public/dota2Data.json"));
+  const _posData = await request(_jsonData);
 
   return {
-    props: { _posData, _linksData },
+    props: { _jsonData, _posData },
   };
 }
 
