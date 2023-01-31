@@ -83,11 +83,9 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode }) {
     const index = selectedNode.indexOf(id);
     const count = (selectedNode[0] != -1 ? 1 : 0) + (selectedNode[1] != -1 ? 1 : 0);
     let c = 0;
-    console.log(`index: ${index}`);
-    console.log(`count: ${count}`);
 
     if (index != -1) {
-      console.log("既に存在している場合:削除される");
+      //console.log("既に存在している場合:削除される");
       setSelectedNode(selectedNode.map((e, i) => {
         if (i == index) {
           return (-1);
@@ -95,10 +93,10 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode }) {
         return (e);
       }));
     } else if (count == 2) {
-      console.log("既に2つ選択していてさらに選択しようとしている場合:何も起こらない");
+      //console.log("既に2つ選択していてさらに選択しようとしている場合:何も起こらない");
       //do nothing
     } else if (count == 0 || count == 1) {
-      console.log("新たに選択する場合:追加される");
+      //console.log("新たに選択する場合:追加される");
       setSelectedNode(selectedNode.map((e, i) => {
         if (e == -1 && c == 0) {
           c++;
