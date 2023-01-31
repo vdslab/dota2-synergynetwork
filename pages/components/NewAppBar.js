@@ -8,11 +8,9 @@ import NorthWestIcon from '@mui/icons-material/NorthWest';
 import MenuIcon from '@mui/icons-material/Menu';
 import { DisplayData } from './DisplayData';
 import { SelectHero } from './SelectHero';
-export const NewAppBar = (props) => {
+export const NewAppBar = ({ selectedNode, setSelectedNode, posData}) => {
   const [showValue, setShowValue] = useState("勝率差");
   const [menu, setMenu] = useState([400, 400]);
-  const nodeState = props.nodeState
-  const setNodeState = props.setNodeState
   const handleChange = (e) => {
     setShowValue(e.target.value)
   }
@@ -46,10 +44,10 @@ export const NewAppBar = (props) => {
               </Select>
             </FormControl>
           </Box>
-          <SelectHero hero={"hero1"} id={0} displayHero={props.displayHero} setDisplayHero={props.setDisplayHero}/>
-          <SelectHero hero={"hero2"} id={0} displayHero={props.displayHero} setDisplayHero={props.setDisplayHero}/>
+          <SelectHero hero={"hero1"} id={selectedNode[0]} posData={posData}/>
+          <SelectHero hero={"hero2"} id={selectedNode[1]} posData={posData}/>
           
-          <DisplayData nodeState={nodeState} sestNodeState={setNodeState} />
+          <DisplayData selectedNode={selectedNode} setSelectedNode={setSelectedNode} posData={posData}/>
           <IconButton position="absolute" size="large" style={{ left: 340, top: 190 }} onClick={hideMenu}>
             <NorthWestIcon fontSize="inherit" />
           </IconButton>

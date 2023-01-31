@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { useState } from 'react';
-export const SelectHero = ({hero, id, displayHero, setDisplayHero}) =>{
+export const SelectHero = ({hero, id, displayHero, setDisplayHero, posData}) =>{
     const [ id1, setId] = useState(null)
     return (
         <Box sx={{ width: 200 }}>
