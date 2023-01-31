@@ -42,7 +42,7 @@ export default function Home({ _jsonData, _posData }) {
 
   useEffect(() => {
     if (changeHero) {
-      console.log("acetiveHero");
+      //console.log("acetiveHero");
       (async () => {
         const jsonData = {
           heroData: _jsonData.heroData.filter((e) => {
