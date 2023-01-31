@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
 import { NewAppBar } from "./components/NewAppBar.js";
 import { trimmingIcon } from "./components/TrimmingIcon";
-import { DisplayData } from "./components/DisplayData";
 
 export default function Home({ _jsonData, _posData }) {
   const [posData, setPosData] = useState(_posData);
@@ -90,6 +89,7 @@ export default function Home({ _jsonData, _posData }) {
         activeHero={activeHero}
         setActiveHero={setActiveHero}
         setChangeHero={setChangeHero}
+        _jsonData={_jsonData}
       />
       <ScatterPlot
         posData={posData}
@@ -170,7 +170,7 @@ function ScatterPlot({
   }
 
   const { xScale, yScale } = xyScale();
-  console.log(linksData);
+
   return (
     <ZoomableSVG width={width} height={height}>
       {linksData.map((data) => {

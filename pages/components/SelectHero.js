@@ -21,3 +21,7 @@ export const SelectHero = ({hero, id, displayHero, setDisplayHero, posData}) =>{
     </Box>
     )
 }
+
+export default function Home() {
+  return (<div></div>)
+}

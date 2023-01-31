@@ -1,6 +1,5 @@
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
-import { active } from "d3";
 import Image from 'next/image'
 
 export const HeroList = ({ _posData, activeHero, setActiveHero, setChangeHero }) => {
@@ -39,5 +38,5 @@ export const HeroList = ({ _posData, activeHero, setActiveHero, setChangeHero })
 }
 
 export default function Home() {
-    return <div></div>
+    return (<div></div>)
 }

@@ -16,6 +16,8 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { HeroListDrawer } from "./HeroListDrawer";
 import { TextField } from "@mui/material";
+import { DisplayData } from "./DisplayData";
+
 export function NewAppBar({
   posData,
   _posData,
@@ -27,7 +29,8 @@ export function NewAppBar({
   setWinRateMinMax,
   activeHero,
   setActiveHero,
-  setChangeHero
+  setChangeHero,
+  _jsonData,
 }) {
   const heros = posData.map((e) => {
     return {
@@ -171,6 +174,7 @@ export function NewAppBar({
             styles={selectStyles}
           />
         </FormControl>
+        <DisplayData selectedNode={selectedNode} posData={posData} _jsonData={_jsonData} />
       </Drawer>
     </Box>
   );
