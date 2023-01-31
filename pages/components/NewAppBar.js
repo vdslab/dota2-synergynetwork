@@ -15,6 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { styled, useTheme } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { HeroListDrawer } from "./HeroListDrawer";
 export function NewAppBar({
   posData,
   selectedNode,
@@ -38,7 +39,18 @@ export function NewAppBar({
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleHeroListDrawerOpen = () =>{
+    setHeroListOpen(true);
+  }
+
+  const handleHeroListDrawerClose = () =>{
+    setHeroListOpen(false);
+  }
+
   const [open, setOpen] = React.useState(false);
+  const [heroListOpen, setHeroListOpen] = React.useState(false);
+
   const theme = useTheme();
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
@@ -60,11 +72,21 @@ export function NewAppBar({
           >
             <MenuIcon />
           </IconButton>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleHeroListDrawerOpen}
+            edge="start"
+            sx={{ mr: 2, ...(open && { display: "none" }) }}
+          >
+            <MenuIcon />
+          </IconButton>
           <Typography variant="h5" noWrap component="div">
             Dota2 SynergyNetwork
           </Typography>
         </Toolbar>
       </AppBar>
+      <HeroListDrawer heroListOpen={heroListOpen} handleHeroListDrawerClose={handleHeroListDrawerClose}/>
       <Drawer
         sx={{
           width: menu[0],
