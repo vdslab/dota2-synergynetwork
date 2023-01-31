@@ -86,7 +86,7 @@ export function NewAppBar({
           </Typography>
         </Toolbar>
       </AppBar>
-      <HeroListDrawer heroListOpen={heroListOpen} handleHeroListDrawerClose={handleHeroListDrawerClose}/>
+      <HeroListDrawer heroListOpen={heroListOpen} handleHeroListDrawerClose={handleHeroListDrawerClose} posData={posData}/>
       <Drawer
         sx={{
           width: menu[0],

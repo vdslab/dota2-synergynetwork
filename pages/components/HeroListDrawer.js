@@ -1,9 +1,10 @@
 import Drawer from "@mui/material/Drawer";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { HeroList } from "./HeroList"
 import { styled, useTheme } from "@mui/material/styles";
 import { FormControl, IconButton } from "@mui/material";
 
-export const HeroListDrawer = ({heroListOpen, handleHeroListDrawerClose}) =>{
+export const HeroListDrawer = ({heroListOpen, handleHeroListDrawerClose, posData}) =>{
     const theme = useTheme();
     const DrawerHeader = styled("div")(({ theme }) => ({
         display: "flex",
@@ -35,7 +36,7 @@ export const HeroListDrawer = ({heroListOpen, handleHeroListDrawerClose}) =>{
             )}
           </IconButton>
         </DrawerHeader>
-        
+        <HeroList posData={posData}/>
       </Drawer>
     )
 } 
