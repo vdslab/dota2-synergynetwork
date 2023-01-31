@@ -78,6 +78,7 @@ export default function Home({ _jsonData, _posData }) {
         setMatchCountMinMax={setMatchCountMinMax}
         winRateMinMax={winRateMinMax}
         setWinRateMinMax={setWinRateMinMax}
+        _jsonData={_jsonData}
       />
       <ScatterPlot
         posData={posData}

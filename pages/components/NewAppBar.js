@@ -24,6 +24,7 @@ export function NewAppBar({
   setMatchCountMinMax,
   winRateMinMax,
   setWinRateMinMax,
+  _jsonData
 }) {
   const heros = posData.map((e) => {
     return {
@@ -143,6 +144,7 @@ export function NewAppBar({
           />
           <MinMax mm={winRateMinMax} setmm={setWinRateMinMax} text={"勝率"} />
         </FormControl>
+        <DisplayData selectedNode={selectedNode} posData={posData} _jsonData={_jsonData}/>
       </Drawer>
     </Box>
   );

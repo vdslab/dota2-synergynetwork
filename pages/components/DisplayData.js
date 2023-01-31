@@ -1,4 +1,4 @@
-export const DisplayData = ({selectedNode, setSelectedNode, posData, _jsonData}) => {
+export const DisplayData = ({selectedNode, posData, _jsonData}) => {
     let displayIcons = []
     let win_rate=100
 
@@ -8,7 +8,6 @@ export const DisplayData = ({selectedNode, setSelectedNode, posData, _jsonData})
             element.hero1==selectedNode[1]&&element.hero2==selectedNode[0])
              win_rate=combinationData.winrate
     }
-    const pick_rate="100"
     console.log("test")
     const imageSize=5
     return (
@@ -35,7 +34,6 @@ export const DisplayData = ({selectedNode, setSelectedNode, posData, _jsonData})
             }
         </svg>
             <p>{win_rate}</p>
-            <p>{pick_rate}</p>
         </div>
     );
 }
