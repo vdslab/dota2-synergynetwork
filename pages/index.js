@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import { active, image } from "d3";
 import { useEffect, useRef, useState } from "react";
 import { request } from "./api/api";
 import { NewAppBar } from "./components/NewAppBar.js";
@@ -154,15 +153,11 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchC
         if (selectedNode.indexOf(data.source) != -1 || selectedNode.indexOf(data.target) != -1) {
           if (winRateMinMax[0] <= data.winRate * 100 && data.winRate * 100 <= winRateMinMax[1] &&
             matchCountMinMax[0] <= data.count && data.count <= matchCountMinMax[1]) {
+            const pos1 = [xScale(posData[data.source_c].x), height - yScale(posData[data.source_c].y)];
+            const pos2 = [xScale(posData[data.target_c].x), height - yScale(posData[data.target_c].y)];
             return (
               <g key={`${data.source},${data.target}`}>
-                <line
-                  x1={xScale(posData[data.source_c].x)}
-                  x2={xScale(posData[data.target_c].x)}
-                  y1={height - yScale(posData[data.source_c].y)}
-                  y2={height - yScale(posData[data.target_c].y)}
-                  stroke="black"
-                ></line>
+                <polygon points={`${pos1[0]} ${pos1[1]}, ${pos1[0] + 10} ${pos1[1]}, ${pos2[0]} ${pos2[1]}`} />
               </g>
             );
           }
