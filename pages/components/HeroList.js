@@ -1,6 +1,8 @@
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import { active } from "d3";
+import Image from 'next/image'
+
 export const HeroList = ({ _posData, activeHero, setActiveHero, setChangeHero }) => {
     const imageSize = 8;
     return (
@@ -12,7 +14,7 @@ export const HeroList = ({ _posData, activeHero, setActiveHero, setChangeHero })
                 {
                     _posData.map((e) => {
                         return (
-                            <img
+                            <Image
                                 key={e.id}
                                 src={e.image}
                                 height={imageSize * 9}

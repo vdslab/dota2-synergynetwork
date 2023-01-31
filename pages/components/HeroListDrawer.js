@@ -29,10 +29,8 @@ export const HeroListDrawer = ({ heroListOpen, handleHeroListDrawerClose, _posDa
     >
       <DrawerHeader>
         <IconButton onClick={handleHeroListDrawerClose}>
-          {theme.direction === "ltr" ? (
+          {theme.direction === "ltr" && (
             <ChevronLeftIcon />
-          ) : (
-            <ChevronRightIcon />
           )}
         </IconButton>
       </DrawerHeader>
