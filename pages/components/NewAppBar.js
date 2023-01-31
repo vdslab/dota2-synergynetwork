@@ -1,53 +1,129 @@
+import * as React from "react";
+import { DisplayData } from "./DisplayData";
+
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Drawer from "@mui/material/Drawer";
+import Typography from "@mui/material/Typography";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
 import { useState } from "react";
-import { FormControl, IconButton } from '@mui/material';
-import { Box } from '@mui/system';
-import NorthWestIcon from '@mui/icons-material/NorthWest';
-import MenuIcon from '@mui/icons-material/Menu';
-import { DisplayData } from './DisplayData';
-
-import React from 'react'
-import Select from 'react-select'
-
-
-export function NewAppBar({ posData, selectedNode, setSelectedNode, matchCountMinMax, setMatchCountMinMax, winRateMinMax, setWinRateMinMax }) {
+import { FormControl, IconButton } from "@mui/material";
+import { Box } from "@mui/system";
+import MenuIcon from "@mui/icons-material/Menu";
+import { styled, useTheme } from "@mui/material/styles";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+export function NewAppBar({
+  posData,
+  selectedNode,
+  setSelectedNode,
+  matchCountMinMax,
+  setMatchCountMinMax,
+  winRateMinMax,
+  setWinRateMinMax,
+}) {
   const heros = posData.map((e) => {
-    return (
-      {
-        value: e.id,
-        label: e.heroname,
-      }
-    );
-  })
+    return {
+      value: e.id,
+      label: e.heroname,
+    };
+  });
+  const [menu, setMenu] = useState([400, 400]);
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-  const menuX = 450, menuY = 400;
-
-  const [menu, setMenu] = useState([menuX, menuY]);
-  const hideMenu = () => {
-    setMenu([70, 70]);
-  }
-  const openMenu = () => {
-    setMenu([menuX, menuX]);
-  }
-
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+  const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
+  const DrawerHeader = styled("div")(({ theme }) => ({
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    ...theme.mixins.toolbar,
+    justifyContent: "flex-end",
+  }));
   return (
-    <Box position="fixed" style={{ transition: "0.5s", overflow: "hidden", boxShadow: "5px 5px 5px rgba(0,0,0,0.25)", borderRadius: "2px" }} sx={{
-      width: menu[0],
-      height: menu[1],
-      margin: 1,
-      backgroundColor: "#FFFFFF"
-    }}>
-      <FormControl>
-        <Select
-          value={selectedNode[0] == -1 ? null : heros.find((e) => { return (e.value == selectedNode[0]) })}
-          options={heros} onChange={(value) => setSelectedNode([value.value, selectedNode[1]])}
-        />
-        <Select
-          value={selectedNode[1] == -1 ? null : heros.find((e) => { return (e.value == selectedNode[1]) })}
-          options={heros} onChange={(value) => setSelectedNode([selectedNode[0], value.value])}
-        />
-        <MinMax mm={matchCountMinMax} setmm={setMatchCountMinMax} text={"試合数"} />
-        <MinMax mm={winRateMinMax} setmm={setWinRateMinMax} text={"勝率"} />
-      </FormControl>
+    <Box sx={{ display: "flex" }}>
+      <AppBar position="fixed" open={open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{ mr: 2, ...(open && { display: "none" }) }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h5" noWrap component="div">
+            Dota2 SynergyNetwork
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        sx={{
+          width: menu[0],
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: menu[0],
+            boxSizing: "border-box",
+          },
+        }}
+        variant="persistent"
+        anchor="left"
+        open={open}
+      >
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "ltr" ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
+          </IconButton>
+        </DrawerHeader>
+        <FormControl>
+          <InputLabel id="demo-simple-select-label">Data</InputLabel>
+
+          <Select
+            value={
+              selectedNode[0] == -1
+                ? null
+                : heros.find((e) => {
+                    return e.value == selectedNode[0];
+                  })
+            }
+            options={heros}
+            onChange={(value) =>
+              setSelectedNode([value.value, selectedNode[1]])
+            }
+          />
+          <Select
+            value={
+              selectedNode[1] == -1
+                ? null
+                : heros.find((e) => {
+                    return e.value == selectedNode[1];
+                  })
+            }
+            options={heros}
+            onChange={(value) =>
+              setSelectedNode([selectedNode[0], value.value])
+            }
+          />
+          <MinMax
+            mm={matchCountMinMax}
+            setmm={setMatchCountMinMax}
+            text={"試合数"}
+          />
+          <MinMax mm={winRateMinMax} setmm={setWinRateMinMax} text={"勝率"} />
+        </FormControl>
+      </Drawer>
     </Box>
   );
 }
@@ -71,5 +147,5 @@ function MinMax({ mm, setmm, text }) {
 }
 
 export default function Home() {
-  return (<div></div>)
+  return <div></div>;
 }
