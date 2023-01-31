@@ -1,6 +1,3 @@
-
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
 import { useState } from "react";
 import { FormControl, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
@@ -10,36 +7,6 @@ import { DisplayData } from './DisplayData';
 
 import React from 'react'
 import Select from 'react-select'
-
-
-
-
-const MenuContents = () => {
-  if (menu[0] == 400) {
-    return (
-      <div>
-        <h1>Dota2 SynergyNetwork</h1>
-        <Box sx={{
-          margin: 1
-        }}>
-          <FormControl>
-
-          </FormControl>
-        </Box>
-        <DisplayData nodeState={nodeState} sestNodeState={setNodeState} />
-        <IconButton position="absolute" size="large" style={{ left: 340, top: 190 }} onClick={hideMenu}>
-          <NorthWestIcon fontSize="inherit" />
-        </IconButton>
-      </div>
-    )
-  } else {
-    return (
-      <IconButton position="absolute" size="large" style={{ left: 10, top: 10 }} onClick={openMenu}>
-        <MenuIcon fontSize="inherit" />
-      </IconButton>
-    )
-  }
-}
 
 
 export function NewAppBar({ posData, selectedNode, setSelectedNode, matchCountMinMax, setMatchCountMinMax, winRateMinMax, setWinRateMinMax }) {
