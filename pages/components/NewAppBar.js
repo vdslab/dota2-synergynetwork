@@ -18,12 +18,16 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { HeroListDrawer } from "./HeroListDrawer";
 export function NewAppBar({
   posData,
+  _posData,
   selectedNode,
   setSelectedNode,
   matchCountMinMax,
   setMatchCountMinMax,
   winRateMinMax,
   setWinRateMinMax,
+  activeHero,
+  setActiveHero,
+  setChangeHero
 }) {
   const heros = posData.map((e) => {
     return {
@@ -40,11 +44,11 @@ export function NewAppBar({
     setOpen(false);
   };
 
-  const handleHeroListDrawerOpen = () =>{
+  const handleHeroListDrawerOpen = () => {
     setHeroListOpen(true);
   }
 
-  const handleHeroListDrawerClose = () =>{
+  const handleHeroListDrawerClose = () => {
     setHeroListOpen(false);
   }
 
@@ -86,7 +90,14 @@ export function NewAppBar({
           </Typography>
         </Toolbar>
       </AppBar>
-      <HeroListDrawer heroListOpen={heroListOpen} handleHeroListDrawerClose={handleHeroListDrawerClose} posData={posData}/>
+      <HeroListDrawer
+        heroListOpen={heroListOpen}
+        handleHeroListDrawerClose={handleHeroListDrawerClose}
+        _posData={_posData}
+        activeHero={activeHero}
+        setActiveHero={setActiveHero}
+        setChangeHero={setChangeHero}
+      />
       <Drawer
         sx={{
           width: menu[0],

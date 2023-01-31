@@ -10,19 +10,26 @@ export default function Home({ _jsonData, _posData }) {
   const [linksdata, setLinksData] = useState(null);
 
   const [selectedNode, setSelectedNode] = useState([-1, -1]);
-  const [activeHero, setActiveHero] = useState(_posData.map((e) => { return (e.id) }));
+  const [activeHero, setActiveHero] = useState(_posData.map(() => { return 1; }));
   const [changeHero, setChangeHero] = useState(false);
   const [matchCountMinMax, setMatchCountMinMax] = useState([500, 10000]);
   const [winRateMinMax, setWinRateMinMax] = useState([0, 100]);
 
-  function updateLinksData() {
-    const trans = {}
-    _posData.map((d) => {
-      trans[d.id.toString()] = d.c_id;
-    })
+  const transAll = {}
+  _posData.map((d) => {
+    transAll[d.id.toString()] = d.c_id;
+  })
 
+  const trans = {};
+  posData.map((d) => {
+    trans[d.id.toString()] = d.c_id;
+  })
+
+  function updateLinksData() {
     setLinksData(_jsonData.getHeroCombinationWinLose.map((d) => {
-      if (activeHero.indexOf(d.hero1) != -1 || activeHero.indexOf(d.hero2) != -1) {
+      const sc = transAll[d.hero1.toString()];
+      const tc = transAll[d.hero2.toString()];
+      if (activeHero[sc] == 1 && activeHero[tc] == 1) {
         return (
           {
             source: d.hero1,
@@ -36,19 +43,20 @@ export default function Home({ _jsonData, _posData }) {
           }
         );
       }
-    }));
+    }).filter((e) => { return (e != undefined) }));
   }
 
   useEffect(() => {
     if (changeHero) {
+      setLinksData(null);
       //console.log("acetiveHero");
       (async () => {
         const jsonData = {
           heroData: _jsonData.heroData.filter((e) => {
-            return (activeHero.indexOf(e.id) != -1);
+            return (activeHero[trans[e.id]] == 1);
           }),
           getHeroCombinationWinLose: _jsonData.getHeroCombinationWinLose.filter((e) => {
-            return (activeHero.indexOf(e.hero1) != -1 || activeHero.indexOf(e.hero2) != -1);
+            return (activeHero[trans[e.hero1]] == 1 && activeHero[trans[e.hero2]] == 1);
           }),
         };
         const r = await request(jsonData);
@@ -72,12 +80,16 @@ export default function Home({ _jsonData, _posData }) {
     <div>
       <NewAppBar
         posData={posData}
+        _posData={_posData}
         selectedNode={selectedNode}
         setSelectedNode={setSelectedNode}
         matchCountMinMax={matchCountMinMax}
         setMatchCountMinMax={setMatchCountMinMax}
         winRateMinMax={winRateMinMax}
         setWinRateMinMax={setWinRateMinMax}
+        activeHero={activeHero}
+        setActiveHero={setActiveHero}
+        setChangeHero={setChangeHero}
       />
       <ScatterPlot
         posData={posData}
@@ -146,7 +158,7 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchC
   }
 
   const { xScale, yScale } = xyScale();
-
+  console.log(linksData);
   return (
     <ZoomableSVG width={width} height={height}>
       {linksData.map((data) => {
