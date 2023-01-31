@@ -10,21 +10,28 @@ export default function Home({ _jsonData, _posData }) {
   const [linksdata, setLinksData] = useState(null);
 
   const [selectedNode, setSelectedNode] = useState([-1, -1]);
-  const [activeHero, setActiveHero] = useState(_posData.map((e) => { return (e.id) }));
+  const [activeHero, setActiveHero] = useState(
+    _posData.map((e) => {
+      return e.id;
+    })
+  );
   const [changeHero, setChangeHero] = useState(false);
   const [matchCountMinMax, setMatchCountMinMax] = useState([500, 10000]);
   const [winRateMinMax, setWinRateMinMax] = useState([0, 100]);
 
   function updateLinksData() {
-    const trans = {}
+    const trans = {};
     _posData.map((d) => {
       trans[d.id.toString()] = d.c_id;
-    })
+    });
 
-    setLinksData(_jsonData.getHeroCombinationWinLose.map((d) => {
-      if (activeHero.indexOf(d.hero1) != -1 || activeHero.indexOf(d.hero2) != -1) {
-        return (
-          {
+    setLinksData(
+      _jsonData.getHeroCombinationWinLose.map((d) => {
+        if (
+          activeHero.indexOf(d.hero1) != -1 ||
+          activeHero.indexOf(d.hero2) != -1
+        ) {
+          return {
             source: d.hero1,
             target: d.hero2,
             source_c: trans[d.hero1.toString()],
@@ -33,10 +40,10 @@ export default function Home({ _jsonData, _posData }) {
             lose: d.lose,
             count: d.count,
             winRate: d.winrate,
-          }
-        );
-      }
-    }));
+          };
+        }
+      })
+    );
   }
 
   useEffect(() => {
@@ -45,11 +52,16 @@ export default function Home({ _jsonData, _posData }) {
       (async () => {
         const jsonData = {
           heroData: _jsonData.heroData.filter((e) => {
-            return (activeHero.indexOf(e.id) != -1);
+            return activeHero.indexOf(e.id) != -1;
           }),
-          getHeroCombinationWinLose: _jsonData.getHeroCombinationWinLose.filter((e) => {
-            return (activeHero.indexOf(e.hero1) != -1 || activeHero.indexOf(e.hero2) != -1);
-          }),
+          getHeroCombinationWinLose: _jsonData.getHeroCombinationWinLose.filter(
+            (e) => {
+              return (
+                activeHero.indexOf(e.hero1) != -1 ||
+                activeHero.indexOf(e.hero2) != -1
+              );
+            }
+          ),
         };
         const r = await request(jsonData);
         setPosData(r);
@@ -63,7 +75,7 @@ export default function Home({ _jsonData, _posData }) {
   }, [posData]);
 
   if (linksdata == null) {
-    return (<div>読み込み中...</div>);
+    return <div>読み込み中...</div>;
   }
 
   //return (<div></div>);
@@ -91,7 +103,14 @@ export default function Home({ _jsonData, _posData }) {
   );
 }
 
-function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchCountMinMax, winRateMinMax }) {
+function ScatterPlot({
+  posData,
+  linksData,
+  selectedNode,
+  setSelectedNode,
+  matchCountMinMax,
+  winRateMinMax,
+}) {
   const width = 1200;
   const height = 1200;
   const margin = 50;
@@ -119,29 +138,34 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchC
 
   function updateSelectedNode(id) {
     const index = selectedNode.indexOf(id);
-    const count = (selectedNode[0] != -1 ? 1 : 0) + (selectedNode[1] != -1 ? 1 : 0);
+    const count =
+      (selectedNode[0] != -1 ? 1 : 0) + (selectedNode[1] != -1 ? 1 : 0);
     let c = 0;
 
     if (index != -1) {
       //console.log("既に存在している場合:削除される");
-      setSelectedNode(selectedNode.map((e, i) => {
-        if (i == index) {
-          return (-1);
-        }
-        return (e);
-      }));
+      setSelectedNode(
+        selectedNode.map((e, i) => {
+          if (i == index) {
+            return -1;
+          }
+          return e;
+        })
+      );
     } else if (count == 2) {
       //console.log("既に2つ選択していてさらに選択しようとしている場合:何も起こらない");
       //do nothing
     } else if (count == 0 || count == 1) {
       //console.log("新たに選択する場合:追加される");
-      setSelectedNode(selectedNode.map((e, i) => {
-        if (e == -1 && c == 0) {
-          c++;
-          return (id);
-        }
-        return (e);
-      }));
+      setSelectedNode(
+        selectedNode.map((e, i) => {
+          if (e == -1 && c == 0) {
+            c++;
+            return id;
+          }
+          return e;
+        })
+      );
     }
   }
 
@@ -153,25 +177,45 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchC
         const sourceIndex = selectedNode.indexOf(data.source);
         const targetIndex = selectedNode.indexOf(data.target);
         if (sourceIndex != -1 || targetIndex != -1) {
-          if (winRateMinMax[0] <= data.winRate * 100 && data.winRate * 100 <= winRateMinMax[1] &&
-            matchCountMinMax[0] <= data.count && data.count <= matchCountMinMax[1]) {
-            let s = [xScale(posData[data.source_c].x), height - yScale(posData[data.source_c].y)];
-            let t = [xScale(posData[data.target_c].x), height - yScale(posData[data.target_c].y)];
+          if (
+            winRateMinMax[0] <= data.winRate * 100 &&
+            data.winRate * 100 <= winRateMinMax[1] &&
+            matchCountMinMax[0] <= data.count &&
+            data.count <= matchCountMinMax[1]
+          ) {
+            let s = [
+              xScale(posData[data.source_c].x),
+              height - yScale(posData[data.source_c].y),
+            ];
+            let t = [
+              xScale(posData[data.target_c].x),
+              height - yScale(posData[data.target_c].y),
+            ];
 
             if (sourceIndex != -1) {
-              s = [xScale(posData[data.target_c].x), height - yScale(posData[data.target_c].y)];
-              t = [xScale(posData[data.source_c].x), height - yScale(posData[data.source_c].y)];
+              s = [
+                xScale(posData[data.target_c].x),
+                height - yScale(posData[data.target_c].y),
+              ];
+              t = [
+                xScale(posData[data.source_c].x),
+                height - yScale(posData[data.source_c].y),
+              ];
             }
 
-            const distance = ((s[0] - t[0]) ** 2 + (s[1] - t[1]) ** 2) ** (1 / 2);
+            const distance =
+              ((s[0] - t[0]) ** 2 + (s[1] - t[1]) ** 2) ** (1 / 2);
             const w = 2;
             const pos1 = [s[0], s[1] + w];
             const pos2 = [s[0], s[1] - w];
             const pos3 = [s[0] + distance, s[1]];
-            const arc = Math.atan2(t[1] - s[1], t[0] - s[0]) * 180 / Math.PI;
+            const arc = (Math.atan2(t[1] - s[1], t[0] - s[0]) * 180) / Math.PI;
             return (
               <g key={`${data.source},${data.target}`}>
-                <polygon points={`${pos1[0]} ${pos1[1]}, ${pos2[0]} ${pos2[1]}, ${pos3[0]} ${pos3[1]}`} transform={`rotate(${arc}, ${s[0]}, ${s[1]})`} />
+                <polygon
+                  points={`${pos1[0]} ${pos1[1]}, ${pos2[0]} ${pos2[1]}, ${pos3[0]} ${pos3[1]}`}
+                  transform={`rotate(${arc}, ${s[0]}, ${s[1]})`}
+                />
               </g>
             );
           }
@@ -181,20 +225,24 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchC
         return (
           <g
             key={data.id}
-            transform={`translate(${xScale(data.x)},${height - yScale(data.y)
-              })`}
+            transform={`translate(${xScale(data.x)},${
+              height - yScale(data.y)
+            })`}
             onClick={() => {
               updateSelectedNode(data.id);
             }}
           >
-            <circle r={imageSize * 5} fill={selectedNode.indexOf(data.id) != -1 ? "lime" : "black"} />
+            <circle
+              r={imageSize * 5}
+              fill={selectedNode.indexOf(data.id) != -1 ? "lime" : "black"}
+            />
             <image
               href={data.image}
               height={imageSize * 9}
               width={imageSize * 16}
               alt=""
-              x={-imageSize * 16 / 2}
-              y={-imageSize * 9 / 2}
+              x={(-imageSize * 16) / 2}
+              y={(-imageSize * 9) / 2}
               style={trimmingIcon(data.image, index, imageSize)}
             />
           </g>
