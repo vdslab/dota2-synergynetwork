@@ -71,7 +71,7 @@ export default function Home({ _jsonData, _posData }) {
 
   return (
     <div>
-      <NewAppBar selectedNode={selectedNode} setSelectedNode={setSelectedNode} posData={posData}/>
+      <NewAppBar selectedNode={selectedNode} setSelectedNode={setSelectedNode} posData={posData} _jsonData={_jsonData}/>
       <ScatterPlot
         posData={posData}
         linksData={linksdata}
