@@ -150,14 +150,28 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchC
   return (
     <ZoomableSVG width={width} height={height}>
       {linksData.map((data) => {
-        if (selectedNode.indexOf(data.source) != -1 || selectedNode.indexOf(data.target) != -1) {
+        const sourceIndex = selectedNode.indexOf(data.source);
+        const targetIndex = selectedNode.indexOf(data.target);
+        if (sourceIndex != -1 || targetIndex != -1) {
           if (winRateMinMax[0] <= data.winRate * 100 && data.winRate * 100 <= winRateMinMax[1] &&
             matchCountMinMax[0] <= data.count && data.count <= matchCountMinMax[1]) {
-            const pos1 = [xScale(posData[data.source_c].x), height - yScale(posData[data.source_c].y)];
-            const pos2 = [xScale(posData[data.target_c].x), height - yScale(posData[data.target_c].y)];
+            let s = [xScale(posData[data.source_c].x), height - yScale(posData[data.source_c].y)];
+            let t = [xScale(posData[data.target_c].x), height - yScale(posData[data.target_c].y)];
+
+            if (sourceIndex != -1) {
+              s = [xScale(posData[data.target_c].x), height - yScale(posData[data.target_c].y)];
+              t = [xScale(posData[data.source_c].x), height - yScale(posData[data.source_c].y)];
+            }
+
+            const distance = ((s[0] - t[0]) ** 2 + (s[1] - t[1]) ** 2) ** (1 / 2);
+            const w = 2;
+            const pos1 = [s[0], s[1] + w];
+            const pos2 = [s[0], s[1] - w];
+            const pos3 = [s[0] + distance, s[1]];
+            const arc = Math.atan2(t[1] - s[1], t[0] - s[0]) * 180 / Math.PI;
             return (
               <g key={`${data.source},${data.target}`}>
-                <polygon points={`${pos1[0]} ${pos1[1]}, ${pos1[0] + 10} ${pos1[1]}, ${pos2[0]} ${pos2[1]}`} />
+                <polygon points={`${pos1[0]} ${pos1[1]}, ${pos2[0]} ${pos2[1]}, ${pos3[0]} ${pos3[1]}`} transform={`rotate(${arc}, ${s[0]}, ${s[1]})`} />
               </g>
             );
           }
