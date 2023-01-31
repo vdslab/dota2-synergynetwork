@@ -1,3 +1,4 @@
+import Select from 'react-select'
 import * as React from "react";
 import { DisplayData } from "./DisplayData";
 
@@ -5,7 +6,6 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Drawer from "@mui/material/Drawer";
 import Typography from "@mui/material/Typography";
-import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import { useState } from "react";
@@ -88,15 +88,13 @@ export function NewAppBar({
           </IconButton>
         </DrawerHeader>
         <FormControl>
-          <InputLabel id="demo-simple-select-label">Data</InputLabel>
-
           <Select
             value={
               selectedNode[0] == -1
                 ? null
                 : heros.find((e) => {
-                    return e.value == selectedNode[0];
-                  })
+                  return e.value == selectedNode[0];
+                })
             }
             options={heros}
             onChange={(value) =>
@@ -108,8 +106,8 @@ export function NewAppBar({
               selectedNode[1] == -1
                 ? null
                 : heros.find((e) => {
-                    return e.value == selectedNode[1];
-                  })
+                  return e.value == selectedNode[1];
+                })
             }
             options={heros}
             onChange={(value) =>
