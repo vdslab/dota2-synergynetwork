@@ -14,7 +14,7 @@ export default function Home({ _jsonData, _posData }) {
   const [activeHero, setActiveHero] = useState(_posData.map((e) => { return (e.id) }));
   const [changeHero, setChangeHero] = useState(false);
   const [matchCountMinMax, setMatchCountMinMax] = useState([500, 10000]);
-  const [winRateMinMax, setWinRateMinMax] = useState([0, 1]);
+  const [winRateMinMax, setWinRateMinMax] = useState([0, 100]);
 
   function updateLinksData() {
     const trans = {}
@@ -71,6 +71,15 @@ export default function Home({ _jsonData, _posData }) {
 
   return (
     <div>
+      <NewAppBar
+        posData={posData}
+        selectedNode={selectedNode}
+        setSelectedNode={setSelectedNode}
+        matchCountMinMax={matchCountMinMax}
+        setMatchCountMinMax={setMatchCountMinMax}
+        winRateMinMax={winRateMinMax}
+        setWinRateMinMax={setWinRateMinMax}
+      />
       <ScatterPlot
         posData={posData}
         linksData={linksdata}
@@ -143,7 +152,7 @@ function ScatterPlot({ posData, linksData, selectedNode, setSelectedNode, matchC
     <ZoomableSVG width={width} height={height}>
       {linksData.map((data) => {
         if (selectedNode.indexOf(data.source) != -1 || selectedNode.indexOf(data.target) != -1) {
-          if (winRateMinMax[0] <= data.winRate && data.winRate <= winRateMinMax[1] &&
+          if (winRateMinMax[0] <= data.winRate * 100 && data.winRate * 100 <= winRateMinMax[1] &&
             matchCountMinMax[0] <= data.count && data.count <= matchCountMinMax[1]) {
             return (
               <g key={`${data.source},${data.target}`}>

@@ -1,4 +1,4 @@
-import Select from '@mui/material/Select';
+
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import { useState } from "react";
@@ -7,58 +7,61 @@ import { Box } from '@mui/system';
 import NorthWestIcon from '@mui/icons-material/NorthWest';
 import MenuIcon from '@mui/icons-material/Menu';
 import { DisplayData } from './DisplayData';
-export const NewAppBar = (props) => {
-  const [showValue, setShowValue] = useState("勝率差");
-  const [menu, setMenu] = useState([400, 400]);
-  const nodeState = props.nodeState
-  const setNodeState = props.setNodeState
-  const handleChange = (e) => {
-    setShowValue(e.target.value)
+
+import React from 'react'
+import Select from 'react-select'
+
+
+
+
+const MenuContents = () => {
+  if (menu[0] == 400) {
+    return (
+      <div>
+        <h1>Dota2 SynergyNetwork</h1>
+        <Box sx={{
+          margin: 1
+        }}>
+          <FormControl>
+
+          </FormControl>
+        </Box>
+        <DisplayData nodeState={nodeState} sestNodeState={setNodeState} />
+        <IconButton position="absolute" size="large" style={{ left: 340, top: 190 }} onClick={hideMenu}>
+          <NorthWestIcon fontSize="inherit" />
+        </IconButton>
+      </div>
+    )
+  } else {
+    return (
+      <IconButton position="absolute" size="large" style={{ left: 10, top: 10 }} onClick={openMenu}>
+        <MenuIcon fontSize="inherit" />
+      </IconButton>
+    )
   }
+}
+
+
+export function NewAppBar({ posData, selectedNode, setSelectedNode, matchCountMinMax, setMatchCountMinMax, winRateMinMax, setWinRateMinMax }) {
+  const heros = posData.map((e) => {
+    return (
+      {
+        value: e.id,
+        label: e.heroname,
+      }
+    );
+  })
+
+  const menuX = 450, menuY = 400;
+
+  const [menu, setMenu] = useState([menuX, menuY]);
   const hideMenu = () => {
     setMenu([70, 70]);
   }
   const openMenu = () => {
-    setMenu([400, 400]);
+    setMenu([menuX, menuX]);
   }
 
-  const MenuContents = () => {
-    if (menu[0] == 400) {
-      return (
-        <div>
-          <h1>Dota2 SynergyNetwork</h1>
-          <Box sx={{
-            margin: 1
-          }}>
-            <FormControl>
-              <InputLabel id="demo-simple-select-label">Data</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={showValue}
-                label="data"
-                onChange={handleChange}
-              >
-                <MenuItem value={"勝率差"}>勝率差</MenuItem>
-                <MenuItem value={"使用率"}>使用率</MenuItem>
-                <MenuItem value={"勝率差*使用率"}>勝率差*使用率</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <DisplayData nodeState={nodeState} sestNodeState={setNodeState} />
-          <IconButton position="absolute" size="large" style={{ left: 340, top: 190 }} onClick={hideMenu}>
-            <NorthWestIcon fontSize="inherit" />
-          </IconButton>
-        </div>
-      )
-    } else {
-      return (
-        <IconButton position="absolute" size="large" style={{ left: 10, top: 10 }} onClick={openMenu}>
-          <MenuIcon fontSize="inherit" />
-        </IconButton>
-      )
-    }
-  }
   return (
     <Box position="fixed" style={{ transition: "0.5s", overflow: "hidden", boxShadow: "5px 5px 5px rgba(0,0,0,0.25)", borderRadius: "2px" }} sx={{
       width: menu[0],
@@ -66,8 +69,37 @@ export const NewAppBar = (props) => {
       margin: 1,
       backgroundColor: "#FFFFFF"
     }}>
-      <MenuContents />
+      <FormControl>
+        <Select
+          value={selectedNode[0] == -1 ? null : heros.find((e) => { return (e.value == selectedNode[0]) })}
+          options={heros} onChange={(value) => setSelectedNode([value.value, selectedNode[1]])}
+        />
+        <Select
+          value={selectedNode[1] == -1 ? null : heros.find((e) => { return (e.value == selectedNode[1]) })}
+          options={heros} onChange={(value) => setSelectedNode([selectedNode[0], value.value])}
+        />
+        <MinMax mm={matchCountMinMax} setmm={setMatchCountMinMax} text={"試合数"} />
+        <MinMax mm={winRateMinMax} setmm={setWinRateMinMax} text={"勝率"} />
+      </FormControl>
     </Box>
+  );
+}
+
+function MinMax({ mm, setmm, text }) {
+  return (
+    <div>
+      <input
+        type={"number"}
+        value={mm[0]}
+        onChange={(event) => setmm([event.target.value, mm[1]])}
+      />
+      {" <= " + text + " <= "}
+      <input
+        type={"number"}
+        value={mm[1]}
+        onChange={(event) => setmm([mm[0], event.target.value])}
+      />
+    </div>
   );
 }
 
