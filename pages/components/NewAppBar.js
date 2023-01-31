@@ -8,6 +8,7 @@ import NorthWestIcon from '@mui/icons-material/NorthWest';
 import MenuIcon from '@mui/icons-material/Menu';
 import { DisplayData } from './DisplayData';
 import { SelectHero } from './SelectHero';
+import { HeroList } from './HeroList';
 export const NewAppBar = ({ selectedNode, setSelectedNode, posData, _jsonData}) => {
   const [showValue, setShowValue] = useState("勝率差");
   const [menu, setMenu] = useState([400, 700]);
@@ -48,6 +49,7 @@ export const NewAppBar = ({ selectedNode, setSelectedNode, posData, _jsonData}) 
           <SelectHero hero={"hero2"} id={selectedNode[1]} posData={posData}/>
           
           <DisplayData selectedNode={selectedNode} setSelectedNode={setSelectedNode} posData={posData} _jsonData={_jsonData}/>
+          <HeroList posData={posData}/>
           <IconButton position="absolute" size="large" style={{ left: 340, top: 190 }} onClick={hideMenu}>
             <NorthWestIcon fontSize="inherit" />
           </IconButton>
