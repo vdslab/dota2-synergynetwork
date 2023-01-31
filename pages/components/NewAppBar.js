@@ -143,38 +143,8 @@ export function NewAppBar({
             text={"試合数"}
           />
           <MinMax mm={winRateMinMax} setmm={setWinRateMinMax} text={"勝率"} />
-          <Select
-            placeholder="hero1"
-            value={
-              selectedNode[0] == -1
-                ? null
-                : heros.find((e) => {
-                  return e.value == selectedNode[0];
-                })
-            }
-            options={heros}
-            onChange={(value) =>
-              setSelectedNode([value.value, selectedNode[1]])
-            }
-            styles={selectStyles}
-          />
-          <Select
-            placeholder="hero2"
-            value={
-              selectedNode[1] == -1
-                ? null
-                : heros.find((e) => {
-                  return e.value == selectedNode[1];
-                })
-            }
-            options={heros}
-            onChange={(value) =>
-              setSelectedNode([selectedNode[0], value.value])
-            }
-            styles={selectStyles}
-          />
         </FormControl>
-        <DisplayData selectedNode={selectedNode} posData={posData} _jsonData={_jsonData} />
+        <DisplayData selectedNode={selectedNode} setSelectedNode={setSelectedNode} posData={posData} _jsonData={_jsonData} heros={heros}/>
       </Drawer>
     </Box>
   );
