@@ -9,40 +9,48 @@ export default function Home({ _jsonData, _posData }) {
   const [linksdata, setLinksData] = useState(null);
 
   const [selectedNode, setSelectedNode] = useState([-1, -1]);
-  const [activeHero, setActiveHero] = useState(_posData.map(() => { return 1; }));
+  const [activeHero, setActiveHero] = useState(
+    _posData.map(() => {
+      return 1;
+    })
+  );
   const [changeHero, setChangeHero] = useState(false);
   const [matchCountMinMax, setMatchCountMinMax] = useState([500, 10000]);
   const [winRateMinMax, setWinRateMinMax] = useState([0, 100]);
 
-  const transAll = {}
+  const transAll = {};
   _posData.map((d) => {
     transAll[d.id.toString()] = d.c_id;
-  })
+  });
 
   const trans = {};
   posData.map((d) => {
     trans[d.id.toString()] = d.c_id;
-  })
+  });
 
   function updateLinksData() {
-    setLinksData(_jsonData.getHeroCombinationWinLose.map((d) => {
-      const sc = transAll[d.hero1.toString()];
-      const tc = transAll[d.hero2.toString()];
-      if (activeHero[sc] == 1 && activeHero[tc] == 1) {
-        return (
-          {
-            source: d.hero1,
-            target: d.hero2,
-            source_c: trans[d.hero1.toString()],
-            target_c: trans[d.hero2.toString()],
-            win: d.win,
-            lose: d.lose,
-            count: d.count,
-            winRate: d.winrate,
+    setLinksData(
+      _jsonData.getHeroCombinationWinLose
+        .map((d) => {
+          const sc = transAll[d.hero1.toString()];
+          const tc = transAll[d.hero2.toString()];
+          if (activeHero[sc] == 1 && activeHero[tc] == 1) {
+            return {
+              source: d.hero1,
+              target: d.hero2,
+              source_c: trans[d.hero1.toString()],
+              target_c: trans[d.hero2.toString()],
+              win: d.win,
+              lose: d.lose,
+              count: d.count,
+              winRate: d.winrate,
+            };
           }
-        );
-      }
-    }).filter((e) => { return (e != undefined) }));
+        })
+        .filter((e) => {
+          return e != undefined;
+        })
+    );
   }
 
   useEffect(() => {
@@ -52,11 +60,16 @@ export default function Home({ _jsonData, _posData }) {
       (async () => {
         const jsonData = {
           heroData: _jsonData.heroData.filter((e) => {
-            return (activeHero[trans[e.id]] == 1);
+            return activeHero[trans[e.id]] == 1;
           }),
-          getHeroCombinationWinLose: _jsonData.getHeroCombinationWinLose.filter((e) => {
-            return (activeHero[trans[e.hero1]] == 1 && activeHero[trans[e.hero2]] == 1);
-          })
+          getHeroCombinationWinLose: _jsonData.getHeroCombinationWinLose.filter(
+            (e) => {
+              return (
+                activeHero[trans[e.hero1]] == 1 &&
+                activeHero[trans[e.hero2]] == 1
+              );
+            }
+          ),
         };
         const r = await request(jsonData);
         setPosData(r);
@@ -225,11 +238,13 @@ function ScatterPlot({
         return (
           <g
             key={data.id}
-            transform={`translate(${xScale(data.x)},${height - yScale(data.y)
-              })`}
+            transform={`translate(${xScale(data.x)},${
+              height - yScale(data.y)
+            })`}
             onClick={() => {
               updateSelectedNode(data.id);
             }}
+            style={{ cursor: "pointer" }}
           >
             <circle
               r={imageSize * 5}
@@ -276,7 +291,7 @@ function ZoomableSVG({ children, width, height }) {
     d3.select(svgRef.current).call(zoom);
   }, []);
   return (
-    <svg ref={svgRef} viewBox="0 0 1200 1200">
+    <svg ref={svgRef} viewBox="0 0 1200 1200" style={{ cursor: "grab" }}>
       <g transform={`translate(${x},${y})scale(${k})`}>{children}</g>
     </svg>
   );
