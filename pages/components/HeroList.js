@@ -1,14 +1,21 @@
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Image from 'next/image'
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 
 export const HeroList = ({ _posData, activeHero, setActiveHero, setChangeHero }) => {
-    const imageSize = 8;
+    const imageSize = 4;
     return (
         <Box sx={{ overflow: 'auto', width: 399, height: 1000 }}>
-            <button onClick={() => { setChangeHero(true) }}>
-                button
-            </button>
+            <Box sx={{mt:1,mb:4, ml:2}}>
+                <Stack spacing={2} direction="row">
+                    <Button variant="contained" onClick={() => { setChangeHero(true) }}>Contained</Button>
+                    <Button variant="outlined">Outlined</Button>
+                </Stack>
+            </Box>
+            
+         
             <Grid container spacing={2}>
                 {
                     _posData.map((e) => {
