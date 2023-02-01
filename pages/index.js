@@ -7,8 +7,9 @@ import { trimmingIcon } from "./components/TrimmingIcon";
 export default function Home({ _jsonData, _posData }) {
   const [posData, setPosData] = useState(_posData);
   const [linksdata, setLinksData] = useState(null);
+  console.log(_jsonData);
 
-  const [selectedNode, setSelectedNode] = useState([-1, -1]);
+  const [selectedNode, setSelectedNode] = useState([31, 38]);
   const [activeHero, setActiveHero] = useState(
     _posData.map(() => {
       return 1;
@@ -16,7 +17,7 @@ export default function Home({ _jsonData, _posData }) {
   );
   const [changeHero, setChangeHero] = useState(false);
   const [matchCountMinMax, setMatchCountMinMax] = useState([500, 10000]);
-  const [winRateMinMax, setWinRateMinMax] = useState([0, 100]);
+  const [winRateMinMax, setWinRateMinMax] = useState([55, 100]);
 
   const transAll = {};
   _posData.map((d) => {
@@ -238,9 +239,8 @@ function ScatterPlot({
         return (
           <g
             key={data.id}
-            transform={`translate(${xScale(data.x)},${
-              height - yScale(data.y)
-            })`}
+            transform={`translate(${xScale(data.x)},${height - yScale(data.y)
+              })`}
             onClick={() => {
               updateSelectedNode(data.id);
             }}
