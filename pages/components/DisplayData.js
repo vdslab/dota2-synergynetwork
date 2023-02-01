@@ -20,7 +20,7 @@ export const DisplayData = ({ selectedNode, setSelectedNode, posData, _jsonData,
       };
     },
   };
-    if (selectedNode[0] != -1 && selectedNode[1] != -1) {
+    if (selectedNode[0] != -1 && selectedNode[1] != -1 && selectedNode[0] != selectedNode[1]) {
         const combinationData = _jsonData.getHeroCombinationWinLose.find(element =>
             element.hero1 == selectedNode[0] && element.hero2 == selectedNode[1] ||
             element.hero1 == selectedNode[1] && element.hero2 == selectedNode[0])
