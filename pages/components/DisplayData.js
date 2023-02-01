@@ -37,7 +37,7 @@ export const DisplayData = ({ selectedNode, setSelectedNode, posData, _jsonData,
                     selectedNode.map((element, index) => {
                         if (element != -1) {
                             return (
-                                <Grid item key={element}>
+                                <Grid item key={index}>
                                     <Image
                                         src={posData.find((e) => { return (e.id == element) }).image}
                                         height={imageSize * 9}
