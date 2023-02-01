@@ -17,6 +17,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { HeroListDrawer } from "./HeroListDrawer";
 import { TextField } from "@mui/material";
 import { DisplayData } from "./DisplayData";
+import Button from '@mui/material/Button';
 
 export function NewAppBar({
   posData,
@@ -92,15 +93,7 @@ export function NewAppBar({
           >
             <MenuIcon />
           </IconButton>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleHeroListDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: "none" }) }}
-          >
-            <MenuIcon />
-          </IconButton>
+          <Button variant="contained" style={{color:"white"}} onClick={handleHeroListDrawerOpen}>choice hero</Button>
           <Typography variant="h5" noWrap component="div" sx={{ marginLeft: "auto", marginRight: "auto" }}>
             Dota2 SynergyNetwork
           </Typography>
