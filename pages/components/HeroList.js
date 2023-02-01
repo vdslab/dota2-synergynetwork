@@ -8,14 +8,15 @@ export const HeroList = ({ _posData, activeHero, setActiveHero, setChangeHero })
     const imageSize = 4;
     return (
         <Box sx={{ overflow: 'auto', width: 399, height: 1000 }}>
-            <Box sx={{mt:1,mb:4, ml:2}}>
+            <Box sx={{ mt: 1, mb: 4, ml: 2 }}>
                 <Stack spacing={2} direction="row">
-                    <Button variant="contained" onClick={() => { setChangeHero(true) }}>Contained</Button>
-                    <Button variant="outlined">Outlined</Button>
+                    <Button variant="contained" onClick={() => { setChangeHero(true) }}>Submit</Button>
+                    <Button variant="contained" onClick={() => { setActiveHero(activeHero.map(() => { return (1) })) }}>AllActive</Button>
+                    <Button variant="contained" onClick={() => { setActiveHero(activeHero.map(() => { return (0) })) }}>AllNonActive</Button>
                 </Stack>
             </Box>
-            
-         
+
+
             <Grid container spacing={2}>
                 {
                     _posData.map((e) => {
