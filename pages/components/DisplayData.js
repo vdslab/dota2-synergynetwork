@@ -49,6 +49,8 @@ export const DisplayData = ({ selectedNode, setSelectedNode, posData, _jsonData,
                                     />
                                 </Grid>
                             )
+                        }else{
+                          return(<div style={{width:imageSize*16, height:imageSize*9}}></div>)
                         }
                     })
 
