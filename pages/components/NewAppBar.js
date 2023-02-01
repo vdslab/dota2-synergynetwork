@@ -160,7 +160,7 @@ function MinMax({ mm, setmm, text }) {
         variant="outlined"
         type={"number"}
         value={mm[0]}
-        onChange={(event) => setmm([event.target.value, mm[0]])}
+        onChange={(event) => setmm([event.target.value, mm[1]])}
         sx={{ marginTop: "1rem" }}
       />
       <TextField
@@ -169,7 +169,7 @@ function MinMax({ mm, setmm, text }) {
         variant="outlined"
         type={"number"}
         value={mm[1]}
-        onChange={(event) => setmm([event.target.value, mm[1]])}
+        onChange={(event) => setmm([mm[0], event.target.value])}
         sx={{ marginTop: "1rem" }}
       />
     </div>
