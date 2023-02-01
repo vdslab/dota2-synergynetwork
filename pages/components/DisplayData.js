@@ -20,7 +20,7 @@ export const DisplayData = ({ selectedNode, setSelectedNode, posData, _jsonData,
       };
     },
   };
-    if (selectedNode[0] != -1 && selectedNode[1] != -1) {
+    if (selectedNode[0] != -1 && selectedNode[1] != -1 && selectedNode[0] != selectedNode[1]) {
         const combinationData = _jsonData.getHeroCombinationWinLose.find(element =>
             element.hero1 == selectedNode[0] && element.hero2 == selectedNode[1] ||
             element.hero1 == selectedNode[1] && element.hero2 == selectedNode[0])
@@ -37,7 +37,7 @@ export const DisplayData = ({ selectedNode, setSelectedNode, posData, _jsonData,
                     selectedNode.map((element, index) => {
                         if (element != -1) {
                             return (
-                                <Grid item key={element}>
+                                <Grid item key={[index, element]}>
                                     <Image
                                         src={posData.find((e) => { return (e.id == element) }).image}
                                         height={imageSize * 9}
@@ -49,6 +49,8 @@ export const DisplayData = ({ selectedNode, setSelectedNode, posData, _jsonData,
                                     />
                                 </Grid>
                             )
+                        }else{
+                          return(<div style={{width:imageSize*16, height:imageSize*9}}></div>)
                         }
                     })
 

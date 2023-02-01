@@ -129,7 +129,7 @@ export function NewAppBar({
             )}
           </IconButton>
         </DrawerHeader>
-        <FormControl>
+        <FormControl sx={{pl:3}}>
           <MinMax
             mm={matchCountMinMax}
             setmm={setMatchCountMinMax}
